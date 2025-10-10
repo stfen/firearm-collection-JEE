@@ -1,0 +1,10 @@
+<server description="App server">
+    <featureManager>
+        <feature>servlet-6.0</feature>
+        <feature>jsonb-3.0</feature>
+    </featureManager>
+
+    <httpEndpoint id="defaultHttpEndpoint" httpPort="9080" httpsPort="9443" host="*"/>
+
+    <webApplication location="firearm-collection-JEE.war" contextRoot="/firearms"/>
+</server>
