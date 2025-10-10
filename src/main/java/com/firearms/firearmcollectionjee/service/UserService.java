@@ -1,0 +1,265 @@
+package com.firearms.firearmcollectionjee.service;
+
+import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+/**
+ * Service class for User business logic.
+ * Handles business operations and validation for users.
+ */
+public class UserService {
+    
+    private final UserRepositoryInterface userRepository;
+    
+    public UserService(UserRepositoryInterface userRepository) {
+        this.userRepository = userRepository;
+    }
+    
+    /**
+     * Create a new user with validation.
+     * @param user the user to create
+     * @return the created user
+     * @throws IllegalArgumentException if validation fails
+     */
+    public User createUser(User user) {
+        validateUser(user);
+        
+        // Check if login already exists
+        if (userRepository.existsByLogin(user.getLogin())) {
+            throw new IllegalArgumentException("User with login '" + user.getLogin() + "' already exists");
+        }
+        
+        // Check if email already exists
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("User with email '" + user.getEmail() + "' already exists");
+        }
+        
+        return userRepository.save(user);
+    }
+    
+    /**
+     * Update an existing user.
+     * @param user the user to update
+     * @return the updated user
+     * @throws IllegalArgumentException if validation fails or user not found
+     */
+    public User updateUser(User user) {
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User ID cannot be null for update operation");
+        }
+        
+        if (!userRepository.existsById(user.getId())) {
+            throw new IllegalArgumentException("User with ID '" + user.getId() + "' not found");
+        }
+        
+        validateUser(user);
+        
+        // Check if login is taken by another user
+        Optional<User> existingUserWithLogin = userRepository.findByLogin(user.getLogin());
+        if (existingUserWithLogin.isPresent() && !existingUserWithLogin.get().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Login '" + user.getLogin() + "' is already taken by another user");
+        }
+        
+        // Check if email is taken by another user
+        Optional<User> existingUserWithEmail = userRepository.findByEmail(user.getEmail());
+        if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("Email '" + user.getEmail() + "' is already taken by another user");
+        }
+        
+        return userRepository.save(user);
+    }
+    
+    /**
+     * Find user by ID.
+     * @param id the user ID
+     * @return Optional containing the user if found
+     */
+    public Optional<User> findById(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        return userRepository.findById(id);
+    }
+    
+    /**
+     * Find user by login.
+     * @param login the user login
+     * @return Optional containing the user if found
+     */
+    public Optional<User> findByLogin(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            throw new IllegalArgumentException("Login cannot be null or empty");
+        }
+        return userRepository.findByLogin(login.trim());
+    }
+    
+    /**
+     * Find user by email.
+     * @param email the user email
+     * @return Optional containing the user if found
+     */
+    public Optional<User> findByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        return userRepository.findByEmail(email.trim().toLowerCase());
+    }
+    
+    /**
+     * Get all users.
+     * @return Set of all users
+     */
+    public Set<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    
+    /**
+     * Get users by role.
+     * @param role the role to filter by
+     * @return List of users with the specified role
+     */
+    public List<User> getUsersByRole(String role) {
+        if (role == null || role.trim().isEmpty()) {
+            throw new IllegalArgumentException("Role cannot be null or empty");
+        }
+        
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRoles() != null && user.getRoles().contains(role))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Delete user by ID.
+     * @param id the user ID
+     * @return true if user was deleted, false if not found
+     */
+    public boolean deleteUser(UUID id) {
+        if (id == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        return userRepository.deleteById(id);
+    }
+    
+    /**
+     * Delete user by login.
+     * @param login the user login
+     * @return true if user was deleted, false if not found
+     */
+    public boolean deleteUserByLogin(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            throw new IllegalArgumentException("Login cannot be null or empty");
+        }
+        
+        Optional<User> user = userRepository.findByLogin(login.trim());
+        if (user.isPresent()) {
+            return userRepository.delete(user.get());
+        }
+        return false;
+    }
+    
+    /**
+     * Check if user exists by ID.
+     * @param id the user ID
+     * @return true if user exists
+     */
+    public boolean userExists(UUID id) {
+        if (id == null) {
+            return false;
+        }
+        return userRepository.existsById(id);
+    }
+    
+    /**
+     * Check if login is available.
+     * @param login the login to check
+     * @return true if login is available (not taken)
+     */
+    public boolean isLoginAvailable(String login) {
+        if (login == null || login.trim().isEmpty()) {
+            return false;
+        }
+        return !userRepository.existsByLogin(login.trim());
+    }
+    
+    /**
+     * Check if email is available.
+     * @param email the email to check
+     * @return true if email is available (not taken)
+     */
+    public boolean isEmailAvailable(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return !userRepository.existsByEmail(email.trim().toLowerCase());
+    }
+    
+    /**
+     * Get total user count.
+     * @return number of users
+     */
+    public long getUserCount() {
+        return userRepository.count();
+    }
+    
+    /**
+     * Delete all users.
+     * @return number of users deleted
+     */
+    public long deleteAllUsers() {
+        long count = userRepository.count();
+        userRepository.deleteAll();
+        return count;
+    }
+    
+    /**
+     * Validate user data.
+     * @param user the user to validate
+     * @throws IllegalArgumentException if validation fails
+     */
+    private void validateUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        
+        if (user.getLogin() == null || user.getLogin().trim().isEmpty()) {
+            throw new IllegalArgumentException("User login cannot be null or empty");
+        }
+        
+        if (user.getLogin().trim().length() < 3) {
+            throw new IllegalArgumentException("User login must be at least 3 characters long");
+        }
+        
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("User email cannot be null or empty");
+        }
+        
+        if (!isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        
+        if (user.getBirthDate() != null && user.getBirthDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Birth date cannot be in the future");
+        }
+    }
+    
+    /**
+     * Simple email validation.
+     * @param email the email to validate
+     * @return true if email format is valid
+     */
+    private boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return email.matches(emailRegex);
+    }
+}
