@@ -14,7 +14,7 @@ public class CreateServices implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
         DataStorage dataSource = (DataStorage) event.getServletContext().getAttribute("datasource");
         UserRepository userRepository = new UserRepository(dataSource);
-        String portraitsPath = event.getServletContext().getInitParameter("avatars.path");
-        event.getServletContext().setAttribute("userService", new UserService(userRepository, portraitsPath));
+        String avatarsPath = event.getServletContext().getInitParameter("avatars.path");
+        event.getServletContext().setAttribute("userService", new UserService(userRepository, avatarsPath));
     }
 }

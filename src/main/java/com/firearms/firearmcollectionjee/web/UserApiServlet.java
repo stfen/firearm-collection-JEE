@@ -36,7 +36,7 @@ public class UserApiServlet extends HttpServlet {
 
         public static final Pattern USER = Pattern.compile("/users/(%s)".formatted(UUID.pattern()));
 
-        public static final Pattern USER_PORTRAIT = Pattern.compile("/users/(%s)/portrait".formatted(UUID.pattern()));
+        public static final Pattern USER_AVATAR = Pattern.compile("/users/(%s)/avatar".formatted(UUID.pattern()));
 
     }
 
@@ -72,9 +72,9 @@ public class UserApiServlet extends HttpServlet {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 response.getWriter().write(jsonb.toJson(userController.getUserById(uuid)));
                 return;
-            } else if (path.matches(Patterns.USER_PORTRAIT.pattern())) {
+            } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
                 response.setContentType("image/png");
-                UUID uuid = extractUuid(Patterns.USER_PORTRAIT, path);
+                UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
                 byte[] portrait = userController.getUserAvatar(uuid);
                 response.setContentLength(portrait.length);
                 response.getOutputStream().write(portrait);
@@ -93,9 +93,9 @@ public class UserApiServlet extends HttpServlet {
                 userController.putUser(uuid, jsonb.fromJson(request.getReader(), PutUserRequest.class));
                 response.addHeader("Location", createUrl(request, Paths.API, "users", uuid.toString()));
                 return;
-            } else if (path.matches(Patterns.USER_PORTRAIT.pattern())) {
-                UUID uuid = extractUuid(Patterns.USER_PORTRAIT, path);
-                userController.putUserAvatar(uuid, request.getPart("portrait").getInputStream());
+            } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
+                userController.putUserAvatar(uuid, request.getPart("avatar").getInputStream());
                 return;
             }
         }
@@ -112,8 +112,8 @@ public class UserApiServlet extends HttpServlet {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 userController.deleteUser(uuid);
                 return;
-            } else if (path.matches(Patterns.USER_PORTRAIT.pattern())) {
-                UUID uuid = extractUuid(Patterns.USER_PORTRAIT, path);
+            } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
+                UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
                 userController.deleteUserAvatar(uuid);
                 return;
             }

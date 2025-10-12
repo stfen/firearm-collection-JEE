@@ -31,7 +31,13 @@ public class UserRepository implements UserRepositoryInterface {
     public void update(User user) {
         dataStorage.updateUser(user);
     }
-    
+
+    @Override
+    public void delete(User entity) {
+        dataStorage.deleteUser(entity);
+    }
+
+
     @Override
     public Optional<User> findById(UUID id) {
         return dataStorage.findAllUsers().stream()
@@ -56,11 +62,6 @@ public class UserRepository implements UserRepositoryInterface {
     @Override
     public List<User> findAll() {
         return dataStorage.findAllUsers();
-    }
-    
-    @Override
-    public boolean deleteById(UUID id) {
-        return dataStorage.findAllUsers().removeIf(user -> user.getId().equals(id));
     }
     
     @Override

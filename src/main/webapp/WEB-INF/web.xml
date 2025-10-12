@@ -5,7 +5,7 @@
          version="6.0">
 
     <context-param>
-        <param-name>avatar.paths</param-name>
+        <param-name>avatars.path</param-name>
         <param-value>C:\avatars\users</param-value>
     </context-param>
 

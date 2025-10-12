@@ -115,13 +115,12 @@ public class UserService {
     /**
      * Delete user by ID.
      * @param id the user ID
-     * @return true if user was deleted, false if not found
      */
-    public boolean deleteUser(UUID id) {
+    public void deleteUser(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
-        return userRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(userRepository::delete);
     }
     
     /**

@@ -20,6 +20,7 @@ public interface UserRepositoryInterface {
      */
     void create(User user);
     void update(User user);
+    void delete(User user);
     /**
      * Find user by ID.
      * @param id the user ID
@@ -46,13 +47,6 @@ public interface UserRepositoryInterface {
      * @return Set of all users
      */
     List<User> findAll();
-    
-    /**
-     * Delete user by ID.
-     * @param id the user ID
-     * @return true if user was deleted, false if not found
-     */
-    boolean deleteById(UUID id);
     
     /**
      * Check if user exists by ID.

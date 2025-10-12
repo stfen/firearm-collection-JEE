@@ -77,4 +77,11 @@ public class DataStorage {
         }
         users.add(cloningUtility.clone(value));
     }
+
+    public synchronized void deleteUser(User value) throws IllegalArgumentException {
+        boolean isRemoved = users.removeIf(user -> user.getId().equals(value.getId()));
+        if (!isRemoved) {
+            throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(value.getId()));
+        }
+    }
 }

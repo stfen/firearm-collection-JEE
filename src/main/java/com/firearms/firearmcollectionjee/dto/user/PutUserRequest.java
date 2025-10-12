@@ -11,8 +11,5 @@ import lombok.*;
 @EqualsAndHashCode
 public class PutUserRequest {
     private String login;
-
-    private String password;
-
     private String email;
 }
