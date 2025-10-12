@@ -74,15 +74,6 @@ public class UserController implements UserControllerInterface {
         userService.deleteUser(id);
     }
 
-    @Override
-    public boolean isLoginAvailable(String login) {
-        return userService.isLoginAvailable(login);
-    }
-
-    @Override
-    public boolean isEmailAvailable(String email) {
-        return userService.isEmailAvailable(email);
-    }
 
     @Override
     public byte[] getUserAvatar(UUID id) {

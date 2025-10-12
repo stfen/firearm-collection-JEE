@@ -7,20 +7,12 @@ GET {{base}}/users
 Accept: {{json}}
 
 ### Get user by UUID (replace {{userId}} after creation)
-@userId = 70b21512-1234-5678-97a3-4481ce862b26
+@userId = c461d210-8cea-4213-a19a-3cb856351d57
 GET {{base}}/users/{{userId}}
 Accept: {{json}}
 
 ### Get user by login
 GET {{base}}/users/login/alpha
-Accept: {{json}}
-
-### Check login availability (true if free)
-GET {{base}}/users/login/alpha/available
-Accept: {{json}}
-
-### Check email availability
-GET {{base}}/users/email/test.new@example.com/available
 Accept: {{json}}
 
 ### Create user (PUT)
@@ -66,10 +58,6 @@ Accept: image/png
 
 ### Delete avatar
 DELETE {{base}}/users/{{userId}}/avatar
-
-### Verify deletion (expect 404 again)
-GET {{base}}/users/{{userId}}/avatar
-Accept: image/png
 
 ### Create user with invalid email (expect 400)
 PUT {{base}}/users

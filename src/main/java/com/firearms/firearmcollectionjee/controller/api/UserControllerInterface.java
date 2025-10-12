@@ -26,10 +26,6 @@ public interface UserControllerInterface {
 
     void deleteUser(UUID id);
 
-    boolean isLoginAvailable(String login);
-
-    boolean isEmailAvailable(String email);
-
     /* Avatar (image) operations */
     byte[] getUserAvatar(UUID id);
 

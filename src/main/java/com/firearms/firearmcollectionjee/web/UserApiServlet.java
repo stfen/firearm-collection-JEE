@@ -38,6 +38,8 @@ public class UserApiServlet extends HttpServlet {
 
         public static final Pattern USER_AVATAR = Pattern.compile("/users/(%s)/avatar".formatted(UUID.pattern()));
 
+        public static final Pattern USER_BY_LOGIN = Pattern.compile("/users/login/([A-Za-z0-9._-]+)");
+
     }
 
     private final Jsonb jsonb = JsonbBuilder.create();
@@ -75,9 +77,18 @@ public class UserApiServlet extends HttpServlet {
             } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
                 response.setContentType("image/png");
                 UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
-                byte[] portrait = userController.getUserAvatar(uuid);
-                response.setContentLength(portrait.length);
-                response.getOutputStream().write(portrait);
+                byte[] avatar = userController.getUserAvatar(uuid);
+                if (avatar.length == 0) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+                response.setContentLength(avatar.length);
+                response.getOutputStream().write(avatar);
+                return;
+            } else if (path.matches(Patterns.USER_BY_LOGIN.pattern())) {
+                response.setContentType("application/json");
+                String login = extractSingleGroup(Patterns.USER_BY_LOGIN, path);
+                response.getWriter().write(jsonb.toJson(userController.getUserByLogin(login)));
                 return;
             }
         }
@@ -162,5 +173,13 @@ public class UserApiServlet extends HttpServlet {
                     .append(path, path.startsWith("/") ? 1 : 0, path.endsWith("/") ? path.length() - 1 : path.length());
         }
         return builder.toString();
+    }
+
+    private static String extractSingleGroup(Pattern pattern, String path) {
+        Matcher matcher = pattern.matcher(path);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+        throw new IllegalArgumentException("Pattern did not match: " + pattern.pattern());
     }
 }

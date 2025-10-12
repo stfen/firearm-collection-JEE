@@ -135,29 +135,6 @@ public class UserService {
         return userRepository.existsById(id);
     }
     
-    /**
-     * Check if login is available.
-     * @param login the login to check
-     * @return true if login is available (not taken)
-     */
-    public boolean isLoginAvailable(String login) {
-        if (login == null || login.trim().isEmpty()) {
-            return false;
-        }
-        return !userRepository.existsByLogin(login.trim());
-    }
-    
-    /**
-     * Check if email is available.
-     * @param email the email to check
-     * @return true if email is available (not taken)
-     */
-    public boolean isEmailAvailable(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            return false;
-        }
-        return !userRepository.existsByEmail(email.trim().toLowerCase());
-    }
 
     /**
      * Store or replace a user's avatar image.
