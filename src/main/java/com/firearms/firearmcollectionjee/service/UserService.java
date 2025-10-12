@@ -35,20 +35,18 @@ public class UserService {
      * @return the created user
      * @throws IllegalArgumentException if validation fails
      */
-    public User createUser(User user) {
+    public void createUser(User user) {
         validateUser(user);
-        
-        // Check if login already exists
+
         if (userRepository.existsByLogin(user.getLogin())) {
             throw new IllegalArgumentException("User with login '" + user.getLogin() + "' already exists");
         }
-        
-        // Check if email already exists
+
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("User with email '" + user.getEmail() + "' already exists");
         }
         
-        return userRepository.save(user);
+        userRepository.create(user);
     }
     
     /**
@@ -57,7 +55,7 @@ public class UserService {
      * @return the updated user
      * @throws IllegalArgumentException if validation fails or user not found
      */
-    public User updateUser(User user) {
+    public void updateUser(User user) {
         if (user.getId() == null) {
             throw new IllegalArgumentException("User ID cannot be null for update operation");
         }
@@ -67,20 +65,18 @@ public class UserService {
         }
         
         validateUser(user);
-        
-        // Check if login is taken by another user
+
         Optional<User> existingUserWithLogin = userRepository.findByLogin(user.getLogin());
         if (existingUserWithLogin.isPresent() && !existingUserWithLogin.get().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Login '" + user.getLogin() + "' is already taken by another user");
         }
-        
-        // Check if email is taken by another user
+
         Optional<User> existingUserWithEmail = userRepository.findByEmail(user.getEmail());
         if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Email '" + user.getEmail() + "' is already taken by another user");
         }
         
-        return userRepository.save(user);
+        userRepository.update(user);
     }
     
     /**
@@ -108,39 +104,13 @@ public class UserService {
     }
     
     /**
-     * Find user by email.
-     * @param email the user email
-     * @return Optional containing the user if found
-     */
-    public Optional<User> findByEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("Email cannot be null or empty");
-        }
-        return userRepository.findByEmail(email.trim().toLowerCase());
-    }
-    
-    /**
      * Get all users.
      * @return Set of all users
      */
-    public Set<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-    
-    /**
-     * Get users by role.
-     * @param role the role to filter by
-     * @return List of users with the specified role
-     */
-    public List<User> getUsersByRole(String role) {
-        if (role == null || role.trim().isEmpty()) {
-            throw new IllegalArgumentException("Role cannot be null or empty");
-        }
-        
-        return userRepository.findAll().stream()
-                .filter(user -> user.getRoles() != null && user.getRoles().contains(role))
-                .collect(Collectors.toList());
-    }
+
     
     /**
      * Delete user by ID.
@@ -152,23 +122,6 @@ public class UserService {
             throw new IllegalArgumentException("User ID cannot be null");
         }
         return userRepository.deleteById(id);
-    }
-    
-    /**
-     * Delete user by login.
-     * @param login the user login
-     * @return true if user was deleted, false if not found
-     */
-    public boolean deleteUserByLogin(String login) {
-        if (login == null || login.trim().isEmpty()) {
-            throw new IllegalArgumentException("Login cannot be null or empty");
-        }
-        
-        Optional<User> user = userRepository.findByLogin(login.trim());
-        if (user.isPresent()) {
-            return userRepository.delete(user.get());
-        }
-        return false;
     }
     
     /**
@@ -206,24 +159,6 @@ public class UserService {
         }
         return !userRepository.existsByEmail(email.trim().toLowerCase());
     }
-    
-    /**
-     * Get total user count.
-     * @return number of users
-     */
-    public long getUserCount() {
-        return userRepository.count();
-    }
-    
-    /**
-     * Delete all users.
-     * @return number of users deleted
-     */
-    public long deleteAllUsers() {
-        long count = userRepository.count();
-        userRepository.deleteAll();
-        return count;
-    }
 
     /**
      * Store or replace a user's avatar image.
@@ -241,7 +176,7 @@ public class UserService {
                 Files.createDirectories(target.getParent());
                 Files.write(target, avatar.readAllBytes());
                 user.setAvatarPath(target.toString());
-                userRepository.save(user); // persist updated path
+                userRepository.update(user);
             } catch (IOException e) {
                 throw new IllegalStateException("Error saving avatar for user ID: " + id, e);
             }
@@ -291,7 +226,7 @@ public class UserService {
                 throw new IllegalStateException("Error deleting avatar for user ID: " + id, e);
             }
             user.setAvatarPath("");
-            userRepository.save(user);
+            userRepository.update(user);
         });
     }
     

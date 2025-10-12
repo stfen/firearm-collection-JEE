@@ -1,10 +1,11 @@
 package com.firearms.firearmcollectionjee.controller.api;
 
+import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
+import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
+import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
 import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -13,29 +14,21 @@ import java.util.UUID;
  */
 public interface UserControllerInterface {
 
-    User createUser(User user);
+    void putUser(UUID id, PutUserRequest request);
 
-    User updateUser(User user);
+    void patchUser(UUID id, PatchUserRequest request);
 
-    Optional<User> getUserById(UUID id);
+    GetUserResponse getUserById(UUID id);
 
-    Optional<User> getUserByLogin(String login);
+    GetUserResponse getUserByLogin(String login);
 
-    Optional<User> getUserByEmail(String email);
+    GetUsersResponse getAllUsers();
 
-    Set<User> getAllUsers();
-
-    boolean deleteUser(UUID id);
-
-    boolean deleteUserByLogin(String login);
-
-    List<User> getUsersByRole(String role);
+    void deleteUser(UUID id);
 
     boolean isLoginAvailable(String login);
 
     boolean isEmailAvailable(String email);
-
-    long getUserCount();
 
     /* Avatar (image) operations */
     byte[] getUserAvatar(UUID id);

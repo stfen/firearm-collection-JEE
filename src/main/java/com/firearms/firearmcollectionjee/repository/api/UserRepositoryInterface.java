@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.repository.api;
 
 import com.firearms.firearmcollectionjee.model.User;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -17,8 +18,8 @@ public interface UserRepositoryInterface {
      * @param user the user to save
      * @return the saved user
      */
-    User save(User user);
-    
+    void create(User user);
+    void update(User user);
     /**
      * Find user by ID.
      * @param id the user ID
@@ -44,7 +45,7 @@ public interface UserRepositoryInterface {
      * Find all users.
      * @return Set of all users
      */
-    Set<User> findAll();
+    List<User> findAll();
     
     /**
      * Delete user by ID.
@@ -52,13 +53,6 @@ public interface UserRepositoryInterface {
      * @return true if user was deleted, false if not found
      */
     boolean deleteById(UUID id);
-    
-    /**
-     * Delete user.
-     * @param user the user to delete
-     * @return true if user was deleted, false if not found
-     */
-    boolean delete(User user);
     
     /**
      * Check if user exists by ID.
@@ -80,15 +74,4 @@ public interface UserRepositoryInterface {
      * @return true if user exists
      */
     boolean existsByEmail(String email);
-    
-    /**
-     * Count total number of users.
-     * @return number of users
-     */
-    long count();
-    
-    /**
-     * Delete all users.
-     */
-    void deleteAll();
 }

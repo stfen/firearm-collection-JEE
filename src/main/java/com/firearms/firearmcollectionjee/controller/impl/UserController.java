@@ -1,12 +1,19 @@
 package com.firearms.firearmcollectionjee.controller.impl;
 
+import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.UserControllerInterface;
+import com.firearms.firearmcollectionjee.controller.servlet.exception.BadRequestException;
+import com.firearms.firearmcollectionjee.controller.servlet.exception.NotFoundException;
+import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
+import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
+import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
+import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.service.UserService;
 
+import javax.swing.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -17,53 +24,54 @@ public class UserController implements UserControllerInterface {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final DtoFunctionFactory factory;
+
+    public UserController(UserService userService, DtoFunctionFactory factory) {
         this.userService = userService;
+        this.factory = factory;
     }
 
     @Override
-    public User createUser(User user) {
-        return userService.createUser(user);
+    public void putUser(UUID id, PutUserRequest request) {
+        try {
+            userService.createUser(factory.requestToUserFunction().apply(id, request));
+        } catch (IllegalArgumentException exception) {
+            throw new BadRequestException();
+        }
     }
 
     @Override
-    public User updateUser(User user) {
-        return userService.updateUser(user);
+    public void patchUser(UUID id, PatchUserRequest request) {
+        userService.findById(id).ifPresentOrElse(
+                entity -> userService.updateUser(factory.updateUserWithRequestFunction().apply(entity, request)),
+                () -> {
+                    throw new NotFoundException();
+                }
+        );
     }
 
     @Override
-    public Optional<User> getUserById(UUID id) {
-        return userService.findById(id);
+    public GetUserResponse getUserById(UUID id) {
+        return userService.findById(id)
+                .map(factory.userToResponseFunction())
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Optional<User> getUserByLogin(String login) {
-        return userService.findByLogin(login);
+    public GetUserResponse getUserByLogin(String login) {
+        return userService.findByLogin(login)
+                .map(factory.userToResponseFunction())
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Optional<User> getUserByEmail(String email) {
-        return userService.findByEmail(email);
+    public GetUsersResponse getAllUsers() {
+        return factory.usersToResponseFunction().apply(userService.getAllUsers());
     }
 
     @Override
-    public Set<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @Override
-    public boolean deleteUser(UUID id) {
-        return userService.deleteUser(id);
-    }
-
-    @Override
-    public boolean deleteUserByLogin(String login) {
-        return userService.deleteUserByLogin(login);
-    }
-
-    @Override
-    public List<User> getUsersByRole(String role) {
-        return userService.getUsersByRole(role);
+    public void deleteUser(UUID id) {
+        userService.deleteUser(id);
     }
 
     @Override
@@ -77,22 +85,17 @@ public class UserController implements UserControllerInterface {
     }
 
     @Override
-    public long getUserCount() {
-        return userService.getUserCount();
-    }
-
-    @Override
     public byte[] getUserAvatar(UUID id) {
         return userService.findById(id)
                 .map(u -> userService.getAvatar(id))
-                .orElseThrow(() -> new UserNotFoundException(id));
+                .orElseThrow(NotFoundException::new);
     }
 
     @Override
     public void putUserAvatar(UUID id, java.io.InputStream avatarStream) {
         userService.findById(id).ifPresentOrElse(
                 u -> userService.updateAvatar(id, avatarStream),
-                () -> { throw new UserNotFoundException(id); }
+                () -> { throw new NotFoundException(); }
         );
     }
 
@@ -100,7 +103,7 @@ public class UserController implements UserControllerInterface {
     public void deleteUserAvatar(UUID id) {
         userService.findById(id).ifPresentOrElse(
                 u -> userService.deleteAvatar(id),
-                () -> { throw new UserNotFoundException(id); }
+                () -> { throw new NotFoundException(); }
         );
     }
 }

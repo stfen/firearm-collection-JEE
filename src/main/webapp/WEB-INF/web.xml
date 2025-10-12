@@ -4,10 +4,21 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
-    <!-- Base directory (relative to app working dir) for storing user avatar images -->
     <context-param>
         <param-name>avatar.paths</param-name>
-        <param-value>C:\avatars\tmp</param-value>
+        <param-value>C:\avatars\users</param-value>
     </context-param>
+
+    <listener>
+        <listener-class>com.firearms.firearmcollectionjee.web.listener.CreateDataSource</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>com.firearms.firearmcollectionjee.web.listener.CreateServices</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>com.firearms.firearmcollectionjee.web.listener.CreateControllers</listener-class>
+    </listener>
 
 </web-app>
