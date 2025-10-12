@@ -18,6 +18,7 @@ import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ import java.util.regex.Pattern;
  * Patterned after provided example servlet, simplified to focus on Users.
  */
 @WebServlet(urlPatterns = { UserApiServlet.Paths.API + "/*" })
+@MultipartConfig(maxFileSize = 200 * 1024) // 200KB limit similar to sample
 public class UserApiServlet extends HttpServlet {
 
     private UserControllerInterface userController;
@@ -65,6 +67,7 @@ public class UserApiServlet extends HttpServlet {
         public static final Pattern USER_AVAILABILITY_LOGIN = Pattern.compile("/users/login/(.+)/available");
         public static final Pattern USER_AVAILABILITY_EMAIL = Pattern.compile("/users/email/(.+)/available");
         public static final Pattern USERS_BY_ROLE = Pattern.compile("/roles/([^/]+)/users/?");
+        public static final Pattern USER_AVATAR = Pattern.compile("/users/(" + UUID.pattern() + ")/avatar");
         // Example of PATCH path just reusing USER pattern for partial update
     }
 
@@ -81,13 +84,6 @@ public class UserApiServlet extends HttpServlet {
             this.dtoFactory = (DtoFunctionFactory) factoryAttr;
         } else {
             this.dtoFactory = new DtoFunctionFactory(); // fallback manual construction
-        }
-        // Fallback wiring if controller missing
-        if (this.userController == null) {
-            DataStorage storage = new DataStorage();
-            UserRepositoryInterface repo = new UserRepository(storage);
-            UserService service = new UserService(repo);
-            this.userController = new com.firearms.firearmcollectionjee.controller.impl.UserController(service);
         }
         this.requestToUser = dtoFactory.requestToUser();
         this.updateUserWithRequest = dtoFactory.updateUser();
@@ -109,6 +105,20 @@ public class UserApiServlet extends HttpServlet {
         String path = parseRequestPath(req);
         if (!Paths.API.equals(req.getServletPath())) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Avatar binary resource handled separately (content-type image)
+        if (path.matches(Patterns.USER_AVATAR.pattern())) {
+            UUID id = extractUuid(Patterns.USER_AVATAR, path);
+            byte[] avatar = userController.getUserAvatar(id);
+            if (avatar.length == 0) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Avatar not found");
+                return;
+            }
+            resp.setContentType("image/png"); // assuming only PNG stored
+            resp.setContentLength(avatar.length);
+            resp.getOutputStream().write(avatar);
             return;
         }
 
@@ -185,7 +195,33 @@ public class UserApiServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = parseRequestPath(req);
-        if (!Paths.API.equals(req.getServletPath()) || !path.matches(Patterns.USER.pattern())) {
+        if (!Paths.API.equals(req.getServletPath())) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Avatar upload
+        if (path.matches(Patterns.USER_AVATAR.pattern())) {
+            UUID id = extractUuid(Patterns.USER_AVATAR, path);
+            if (req.getContentType() != null && req.getContentType().startsWith("multipart/")) {
+                // Expect form field name 'avatar'
+                var part = req.getPart("avatar");
+                if (part == null) {
+                    resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing avatar part");
+                    return;
+                }
+                userController.putUserAvatar(id, part.getInputStream());
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return;
+            } else {
+                // Allow raw binary PUT (no multipart) as alternative
+                userController.putUserAvatar(id, req.getInputStream());
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                return;
+            }
+        }
+
+        if (!path.matches(Patterns.USER.pattern())) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -199,7 +235,6 @@ public class UserApiServlet extends HttpServlet {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
             return;
         }
-        // Replace full user (PUT semantics) using provided fields; missing roles -> empty list
         User replacement = new User();
         replacement.setId(id);
         replacement.setLogin(updateDto.getLogin());
@@ -243,7 +278,23 @@ public class UserApiServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = parseRequestPath(req);
-        if (!Paths.API.equals(req.getServletPath()) || !path.matches(Patterns.USER.pattern())) {
+        if (!Paths.API.equals(req.getServletPath())) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        if (path.matches(Patterns.USER_AVATAR.pattern())) {
+            UUID id = extractUuid(Patterns.USER_AVATAR, path);
+            // If avatar absent, treat as no-op (or could return 404) - choosing id existence check
+            Optional<User> u = userController.getUserById(id);
+            if (u.isEmpty()) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "User not found");
+                return;
+            }
+            userController.deleteUserAvatar(id);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            return;
+        }
+        if (!path.matches(Patterns.USER.pattern())) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }

@@ -13,6 +13,8 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
 import java.time.LocalDate;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +43,8 @@ public class AppBootstrapListener implements ServletContextListener {
         // Create core components
         DataStorage storage = new DataStorage();
         UserRepositoryInterface userRepository = new UserRepository(storage);
-        UserService userService = new UserService(userRepository);
+        UserService userService = new UserService(userRepository, ctx.getInitParameter("avatar.paths"));
+
         UserController userController = new UserController(userService);
         DtoFunctionFactory dtoFactory = new DtoFunctionFactory();
 
@@ -88,6 +91,7 @@ public class AppBootstrapListener implements ServletContextListener {
         u.setEmail(email);
         u.setBirthDate(birthDate);
         u.setRoles(roles);
+        u.setAvatarPath("");
         return u;
     }
 

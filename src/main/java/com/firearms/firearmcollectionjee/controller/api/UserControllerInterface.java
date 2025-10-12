@@ -36,4 +36,11 @@ public interface UserControllerInterface {
     boolean isEmailAvailable(String email);
 
     long getUserCount();
+
+    /* Avatar (image) operations */
+    byte[] getUserAvatar(UUID id);
+
+    void putUserAvatar(UUID id, java.io.InputStream avatarStream);
+
+    void deleteUserAvatar(UUID id);
 }

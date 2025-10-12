@@ -80,4 +80,27 @@ public class UserController implements UserControllerInterface {
     public long getUserCount() {
         return userService.getUserCount();
     }
+
+    @Override
+    public byte[] getUserAvatar(UUID id) {
+        return userService.findById(id)
+                .map(u -> userService.getAvatar(id))
+                .orElseThrow(() -> new UserNotFoundException(id));
+    }
+
+    @Override
+    public void putUserAvatar(UUID id, java.io.InputStream avatarStream) {
+        userService.findById(id).ifPresentOrElse(
+                u -> userService.updateAvatar(id, avatarStream),
+                () -> { throw new UserNotFoundException(id); }
+        );
+    }
+
+    @Override
+    public void deleteUserAvatar(UUID id) {
+        userService.findById(id).ifPresentOrElse(
+                u -> userService.deleteAvatar(id),
+                () -> { throw new UserNotFoundException(id); }
+        );
+    }
 }

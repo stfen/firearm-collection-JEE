@@ -3,6 +3,11 @@ package com.firearms.firearmcollectionjee.service;
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,9 +22,11 @@ import java.util.stream.Collectors;
 public class UserService {
     
     private final UserRepositoryInterface userRepository;
+    private final String avatarBasePath; // default, can be overridden via context-param
     
-    public UserService(UserRepositoryInterface userRepository) {
+    public UserService(UserRepositoryInterface userRepository, String avatarBasePath) {
         this.userRepository = userRepository;
+        this.avatarBasePath = avatarBasePath;
     }
     
     /**
@@ -216,6 +223,76 @@ public class UserService {
         long count = userRepository.count();
         userRepository.deleteAll();
         return count;
+    }
+
+    /**
+     * Store or replace a user's avatar image.
+     * @param id user id
+     * @param avatar input stream with image bytes (PNG expected currently)
+     */
+    public void updateAvatar(UUID id, InputStream avatar) {
+        if (id == null || avatar == null) {
+            throw new IllegalArgumentException("User id and avatar stream must not be null");
+        }
+        userRepository.findById(id).ifPresent(user -> {
+            try {
+                String fileName = user.getLogin() + "_" + UUID.randomUUID() + ".png"; // simple naming
+                Path target = Paths.get(avatarBasePath, fileName);
+                Files.createDirectories(target.getParent());
+                Files.write(target, avatar.readAllBytes());
+                user.setAvatarPath(target.toString());
+                userRepository.save(user); // persist updated path
+            } catch (IOException e) {
+                throw new IllegalStateException("Error saving avatar for user ID: " + id, e);
+            }
+        });
+    }
+
+    /**
+     * Retrieve avatar bytes for a user. Returns empty array if none.
+     */
+    public byte[] getAvatar(UUID id) {
+        if (id == null) {
+            return new byte[0];
+        }
+        return userRepository.findById(id).map(user -> {
+            String pathStr = user.getAvatarPath();
+            if (pathStr == null || pathStr.isBlank()) {
+                return new byte[0];
+            }
+            Path p = Paths.get(pathStr);
+            if (!Files.exists(p)) {
+                return new byte[0];
+            }
+            try {
+                return Files.readAllBytes(p);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error reading avatar for user ID: " + id, e);
+            }
+        }).orElse(new byte[0]);
+    }
+
+    /**
+     * Delete avatar file (if exists) and clear stored path.
+     */
+    public void deleteAvatar(UUID id) {
+        if (id == null) {
+            return;
+        }
+        userRepository.findById(id).ifPresent(user -> {
+            String pathStr = user.getAvatarPath();
+            if (pathStr == null || pathStr.isBlank()) {
+                return;
+            }
+            Path p = Paths.get(pathStr);
+            try {
+                Files.deleteIfExists(p);
+            } catch (IOException e) {
+                throw new IllegalStateException("Error deleting avatar for user ID: " + id, e);
+            }
+            user.setAvatarPath("");
+            userRepository.save(user);
+        });
     }
     
     /**

@@ -25,13 +25,14 @@ public class UserRepository implements UserRepositoryInterface {
     public User save(User user) {
         final User userToSave;
         if (user.getId() == null) {
-            userToSave = User.builder()
-                    .id(UUID.randomUUID())
-                    .login(user.getLogin())
-                    .birthDate(user.getBirthDate())
-                    .email(user.getEmail())
-                    .roles(user.getRoles())
-                    .build();
+            User newUser = new User();
+            newUser.setId(UUID.randomUUID());
+            newUser.setLogin(user.getLogin());
+            newUser.setBirthDate(user.getBirthDate());
+            newUser.setEmail(user.getEmail());
+            newUser.setAvatarPath(user.getAvatarPath());
+            newUser.setRoles(user.getRoles());
+            userToSave = newUser;
         } else {
             userToSave = user;
         }

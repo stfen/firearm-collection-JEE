@@ -27,5 +27,8 @@ public class User implements Serializable {
     private String login;
     private LocalDate birthDate;
     private String email;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private String avatarPath;
     private List<String> roles;
 }
