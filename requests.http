@@ -7,7 +7,7 @@ GET {{base}}/users
 Accept: {{json}}
 
 ### Get user by UUID (replace {{userId}} after creation)
-@userId = c461d210-8cea-4213-a19a-3cb856351d57
+@userId = 70b21553-3690-4464-97a3-4481ce862b28
 GET {{base}}/users/{{userId}}
 Accept: {{json}}
 
@@ -42,18 +42,18 @@ GET {{base}}/users/{{userId}}/avatar
 Accept: image/png
 
 ### Upload avatar (raw binary PUT)
-PUT {{base}}/users/{{userId}}/avatar
+PUT {{base}}/users/70b21553-3690-4464-97a3-4481ce862b28/avatar
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="avatar"; filename="avatar1.png'
+Content-Disposition: form-data; name="avatar"; filename="avatar1.png"
 Content-Type: image/png
 
 < C:\Users\stefa\IdeaProjects\firearm-collection-JEE\src\main\resources\avatars\avatar1.png
 --boundary--
 
 ### Retrieve uploaded avatar (PNG bytes)
-GET {{base}}/users/{{userId}}/avatar
+GET {{base}}/users/70b21512-1234-5678-97a3-4481ce862b26/avatar
 Accept: image/png
 
 ### Delete avatar

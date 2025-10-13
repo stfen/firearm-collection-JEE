@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class UserService {
     
     private final UserRepositoryInterface userRepository;
-    private final String avatarBasePath; // default, can be overridden via context-param
+    private final String avatarBasePath;
     
     public UserService(UserRepositoryInterface userRepository, String avatarBasePath) {
         this.userRepository = userRepository;
@@ -147,6 +147,15 @@ public class UserService {
         }
         userRepository.findById(id).ifPresent(user -> {
             try {
+                // Remove previous avatar file if present
+                String oldPath = user.getAvatarPath();
+                if (oldPath != null && !oldPath.isBlank()) {
+                    try {
+                        Path oldFile = Paths.get(oldPath);
+                        Files.deleteIfExists(oldFile);
+                    } catch (IOException e) {
+                    }
+                }
                 String fileName = user.getLogin() + "_" + UUID.randomUUID() + ".png"; // simple naming
                 Path target = Paths.get(avatarBasePath, fileName);
                 Files.createDirectories(target.getParent());
