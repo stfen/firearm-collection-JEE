@@ -31,6 +31,7 @@ public class User implements Serializable {
     @EqualsAndHashCode.Exclude
     private String avatarPath;
     private List<String> roles;
+    private List<Firearm> firearms;
 
 }
 

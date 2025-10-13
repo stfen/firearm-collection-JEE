@@ -33,4 +33,5 @@ public class Firearm implements Serializable {
     private int magazineCapacity;
     private WeaponFamily weaponFamily;
     private LocalDate productionDate;
+    private User user;
 }
