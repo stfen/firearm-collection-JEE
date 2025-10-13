@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @WebServlet(urlPatterns = {
         UserApiServlet.Paths.API + "/*"
 })
-@MultipartConfig(maxFileSize = 200 * 1024)
+@MultipartConfig(maxFileSize = 2 * 1024 * 1024)
 public class UserApiServlet extends HttpServlet {
     private UserController userController;
 

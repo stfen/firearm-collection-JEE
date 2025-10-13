@@ -24,26 +24,26 @@ public class InitializedData implements ServletContextListener {
     private void init() {
         User user1 = User.builder()
                 .id(UUID.fromString("178960ce-f5bf-4e54-82f3-8b10a69d7cce"))
-                .login("alpha")
-                .email("alpha@example.com")
+                .login("ziomus")
+                .email("ziomus@example.com")
                 .build();
 
         User user2 = User.builder()
                 .id(UUID.fromString("c461d210-8cea-4213-a19a-3cb856351d56"))
-                .login("beta")
-                .email("beta@example.com")
+                .login("uzytnik2")
+                .email("uzytnik2@example.com")
                 .build();
 
         User user3 = User.builder()
                 .id(UUID.fromString("70b21553-3690-4464-97a3-4481ce862b28"))
-                .login("charlie")
-                .email("charlie@example.com")
+                .login("gracz2")
+                .email("gracz2@example.com")
                 .build();
 
         User user4 = User.builder()
                 .id(UUID.fromString("70b21512-1234-5678-97a3-4481ce862b26"))
-                .login("delta")
-                .email("delta@example.com")
+                .login("seima")
+                .email("seima@example.com")
                 .build();
 
         userService.createUser(user1);

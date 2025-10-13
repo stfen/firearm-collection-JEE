@@ -12,7 +12,7 @@ GET {{base}}/users/{{userId}}
 Accept: {{json}}
 
 ### Get user by login
-GET {{base}}/users/login/alpha
+GET {{base}}/users/login/seima
 Accept: {{json}}
 
 ### Create user (PUT)
@@ -49,11 +49,11 @@ Content-Type: multipart/form-data; boundary=boundary
 Content-Disposition: form-data; name="avatar"; filename="avatar1.png"
 Content-Type: image/png
 
-< C:\Users\stefa\IdeaProjects\firearm-collection-JEE\src\main\resources\avatars\avatar1.png
+< C:\Users\stefa\Pictures\Roblox\RobloxScreenShot20240923_224013968.png
 --boundary--
 
 ### Retrieve uploaded avatar (PNG bytes)
-GET {{base}}/users/70b21512-1234-5678-97a3-4481ce862b26/avatar
+GET {{base}}/users/70b21553-3690-4464-97a3-4481ce862b28/avatar
 Accept: image/png
 
 ### Delete avatar
