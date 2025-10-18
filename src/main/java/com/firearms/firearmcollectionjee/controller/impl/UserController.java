@@ -10,6 +10,9 @@ import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.service.UserService;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
 
 import javax.swing.*;
 import java.util.List;
@@ -20,12 +23,15 @@ import java.util.UUID;
  * Simple implementation of {@link UserControllerInterface} which delegates calls to {@link UserService}.
  * This class contains no framework annotations so it can be used in plain Java or wired manually.
  */
+@RequestScoped
+@NoArgsConstructor(force = true)
 public class UserController implements UserControllerInterface {
 
     private final UserService userService;
 
     private final DtoFunctionFactory factory;
 
+    @Inject
     public UserController(UserService userService, DtoFunctionFactory factory) {
         this.userService = userService;
         this.factory = factory;

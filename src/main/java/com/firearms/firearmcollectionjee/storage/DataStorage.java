@@ -4,6 +4,10 @@ import com.firearms.firearmcollectionjee.model.Firearm;
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.model.WeaponFamily;
 import com.firearms.firearmcollectionjee.serialization.component.CloningUtility;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +18,9 @@ import java.util.stream.Collectors;
  * Simple in-memory database using HashSets for storing application data.
  * Repository classes will handle all CRUD operations.
  */
+@Log
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class DataStorage {
     
     private final Set<Firearm> firearms = new HashSet<>();
@@ -21,6 +28,7 @@ public class DataStorage {
     private final Set<User> users = new HashSet<>();
     private final CloningUtility cloningUtility;
 
+    @Inject
     public DataStorage(CloningUtility cloningUtility) {
         this.cloningUtility = cloningUtility;
     }

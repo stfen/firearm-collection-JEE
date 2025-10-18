@@ -42,7 +42,7 @@ GET {{base}}/users/{{userId}}/avatar
 Accept: image/png
 
 ### Upload avatar (raw binary PUT)
-PUT {{base}}/users/70b21553-3690-4464-97a3-4481ce862b28/avatar
+PUT {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -53,11 +53,11 @@ Content-Type: image/png
 --boundary--
 
 ### Retrieve uploaded avatar (PNG bytes)
-GET {{base}}/users/70b21553-3690-4464-97a3-4481ce862b28/avatar
+GET {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
 Accept: image/png
 
 ### Delete avatar
-DELETE {{base}}/users/{{userId}}/avatar
+DELETE {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
 
 ### Create user with invalid email (expect 400)
 PUT {{base}}/users

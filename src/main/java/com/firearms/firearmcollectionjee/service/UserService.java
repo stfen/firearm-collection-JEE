@@ -2,6 +2,11 @@ package com.firearms.firearmcollectionjee.service;
 
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,12 +24,15 @@ import java.util.stream.Collectors;
  * Service class for User business logic.
  * Handles business operations and validation for users.
  */
+@ApplicationScoped
+@NoArgsConstructor(force = true)
 public class UserService {
     
     private final UserRepositoryInterface userRepository;
     private final String avatarBasePath;
-    
-    public UserService(UserRepositoryInterface userRepository, String avatarBasePath) {
+
+    @Inject
+    public UserService(UserRepositoryInterface userRepository, @Named("avatarBasePath") String avatarBasePath) {
         this.userRepository = userRepository;
         this.avatarBasePath = avatarBasePath;
     }

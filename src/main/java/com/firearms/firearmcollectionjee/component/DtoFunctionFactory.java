@@ -4,7 +4,9 @@ import com.firearms.firearmcollectionjee.dto.user.function.RequestToUserFunction
 import com.firearms.firearmcollectionjee.dto.user.function.UpdateUserWithRequestFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.UserToResponseFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.UsersToResponseFunction;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class DtoFunctionFactory {
 
     public RequestToUserFunction requestToUserFunction() {

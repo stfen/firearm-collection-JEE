@@ -3,6 +3,10 @@ package com.firearms.firearmcollectionjee.repository.impl;
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import com.firearms.firearmcollectionjee.storage.DataStorage;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +18,13 @@ import java.util.stream.Collectors;
  * Implementation of UserRepositoryInterface.
  * Handles all CRUD operations for users using the in-memory data storage.
  */
+@RequestScoped
+@NoArgsConstructor(force = true)
 public class UserRepository implements UserRepositoryInterface {
     
     private final DataStorage dataStorage;
-    
+
+    @Inject
     public UserRepository(DataStorage dataStorage) {
         this.dataStorage = dataStorage;
     }

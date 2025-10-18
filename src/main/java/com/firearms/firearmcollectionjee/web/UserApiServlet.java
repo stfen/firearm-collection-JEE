@@ -3,6 +3,8 @@ package com.firearms.firearmcollectionjee.web;
 import com.firearms.firearmcollectionjee.controller.impl.UserController;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
+import com.firearms.firearmcollectionjee.model.User;
+import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
 
 import jakarta.json.bind.Jsonb;
@@ -23,8 +25,9 @@ import java.util.regex.Pattern;
 })
 @MultipartConfig(maxFileSize = 2 * 1024 * 1024)
 public class UserApiServlet extends HttpServlet {
+    
+    @Inject
     private UserController userController;
-
     public static final class Paths {
         public static final String API = "/api";
     }
@@ -53,11 +56,7 @@ public class UserApiServlet extends HttpServlet {
         }
     }
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        userController = (UserController) getServletContext().getAttribute("userController");
-    }
+
 
     @SuppressWarnings("RedundantThrows")
     @Override
@@ -95,6 +94,7 @@ public class UserApiServlet extends HttpServlet {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
     }
 
+    @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();

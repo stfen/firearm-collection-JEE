@@ -1,27 +1,38 @@
-package com.firearms.firearmcollectionjee.web.listener;
+package com.firearms.firearmcollectionjee.web.observer;
 
 import java.io.InputStream;
 import java.util.UUID;
 
 import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.service.UserService;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.Initialized;
+import jakarta.enterprise.context.control.RequestContextController;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 import lombok.SneakyThrows;
 
-@WebListener
+@ApplicationScoped
 public class InitializedData implements ServletContextListener {
-    private UserService userService;
+    private final UserService userService;
+    private final RequestContextController requestContextController;
 
-    @Override
-    public void contextInitialized(ServletContextEvent event) {
-        userService = (UserService) event.getServletContext().getAttribute("userService");
+    @Inject
+    public InitializedData(UserService userService, RequestContextController requestContextController) {
+        this.userService = userService;
+        this.requestContextController = requestContextController;
+    }
+
+    public void contextInitialized(@Observes @Initialized(ApplicationScoped.class) Object init) {
         init();
     }
 
     @SneakyThrows
     private void init() {
+        requestContextController.activate();
         User user1 = User.builder()
                 .id(UUID.fromString("178960ce-f5bf-4e54-82f3-8b10a69d7cce"))
                 .login("ziomus")
