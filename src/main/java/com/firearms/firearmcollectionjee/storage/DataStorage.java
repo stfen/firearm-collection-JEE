@@ -112,4 +112,38 @@ public class DataStorage {
             throw new IllegalArgumentException("The firearm id \"%s\" does not exist".formatted(value.getId()));
         }
     }
+
+    public synchronized List<WeaponFamily> findAllWeaponFamilies() {
+        return weaponFamilies.stream()
+                .map(cloningUtility::clone)
+                .collect(Collectors.toList());
+    }
+
+    public synchronized void createWeaponFamily(WeaponFamily value) throws IllegalArgumentException {
+        if (value == null) {
+            throw new IllegalArgumentException("WeaponFamily cannot be null");
+        }
+        if (weaponFamilies.stream().anyMatch(wf -> wf.getId().equals(value.getId()))) {
+            throw new IllegalArgumentException("The weapon family id \"%s\" already exists".formatted(value.getId()));
+        }
+        weaponFamilies.add(cloningUtility.clone(value));
+    }
+
+    public synchronized void updateWeaponFamily(WeaponFamily value) throws IllegalArgumentException {
+        if (value == null) {
+            throw new IllegalArgumentException("WeaponFamily cannot be null");
+        }
+        boolean removed = weaponFamilies.removeIf(wf -> wf.getId().equals(value.getId()));
+        if (!removed) {
+            throw new IllegalArgumentException("The weapon family id \"%s\" does not exist".formatted(value.getId()));
+        }
+        weaponFamilies.add(cloningUtility.clone(value));
+    }
+
+    public synchronized void deleteWeaponFamily(WeaponFamily value) throws IllegalArgumentException {
+        boolean isRemoved = weaponFamilies.removeIf(wf -> wf.getId().equals(value.getId()));
+        if (!isRemoved) {
+            throw new IllegalArgumentException("The weapon family id \"%s\" does not exist".formatted(value.getId()));
+        }
+    }
 }
