@@ -1,9 +1,15 @@
 package com.firearms.firearmcollectionjee.component;
 
+import com.firearms.firearmcollectionjee.dto.firearm.function.FirearmToResponseFunction;
+import com.firearms.firearmcollectionjee.dto.firearm.function.FirearmsToResponseFunction;
+import com.firearms.firearmcollectionjee.dto.firearm.function.RequestToFirearmFunction;
+import com.firearms.firearmcollectionjee.dto.firearm.function.UpdateFirearmWithRequestFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.RequestToUserFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.UpdateUserWithRequestFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.UserToResponseFunction;
 import com.firearms.firearmcollectionjee.dto.user.function.UsersToResponseFunction;
+import com.firearms.firearmcollectionjee.dto.weaponfamily.function.WeaponFamilyToResponseFunction;
+import com.firearms.firearmcollectionjee.dto.weaponfamily.function.WeaponFamiliesToResponseFunction;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
@@ -23,5 +29,31 @@ public class DtoFunctionFactory {
 
     public UsersToResponseFunction usersToResponseFunction() {
         return new UsersToResponseFunction();
+    }
+
+    // Firearm functions
+    public RequestToFirearmFunction requestToFirearmFunction() {
+        return new RequestToFirearmFunction();
+    }
+
+    public UpdateFirearmWithRequestFunction updateFirearmWithRequestFunction() {
+        return new UpdateFirearmWithRequestFunction();
+    }
+
+    public FirearmToResponseFunction firearmToResponseFunction() {
+        return new FirearmToResponseFunction();
+    }
+
+    public FirearmsToResponseFunction firearmsToResponseFunction() {
+        return new FirearmsToResponseFunction();
+    }
+
+    // Weapon Family functions
+    public WeaponFamilyToResponseFunction weaponFamilyToResponseFunction() {
+        return new WeaponFamilyToResponseFunction();
+    }
+
+    public WeaponFamiliesToResponseFunction weaponFamiliesToResponseFunction() {
+        return new WeaponFamiliesToResponseFunction();
     }
 }

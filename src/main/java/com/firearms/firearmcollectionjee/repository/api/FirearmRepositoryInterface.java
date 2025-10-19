@@ -12,6 +12,7 @@ public interface FirearmRepositoryInterface {
     void create(Firearm firearm);
     void update(Firearm firearm);
     void delete(Firearm firearm);
+    List<Firearm> findAll();
     Optional<Firearm> findById(UUID id);
     List<Firearm> findAllByUser(User user);
     List<Firearm> findAllByWeaponFamily(WeaponFamily weaponFamily);

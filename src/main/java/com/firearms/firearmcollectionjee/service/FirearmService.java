@@ -60,6 +60,10 @@ public class FirearmService {
         return firearmRepository.findById(id);
     }
 
+    public List<Firearm> findAll() {
+        return firearmRepository.findAll();
+    }
+
     public Optional<List<Firearm>> findAllByUser(UUID id) {
         return userRepository.findById(id)
                 .map(firearmRepository::findAllByUser);

@@ -61,4 +61,9 @@ public class FirearmRepository implements FirearmRepositoryInterface {
                 .filter(firearm -> weaponFamily.equals(firearm.getWeaponFamily()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Firearm> findAll(){
+        return dataStorage.findAllFirearms();
+    }
 }
