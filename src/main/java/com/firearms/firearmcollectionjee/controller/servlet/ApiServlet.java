@@ -19,10 +19,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {
-        UserApiServlet.Paths.API + "/*"
+        ApiServlet.Paths.API + "/*"
 })
 @MultipartConfig(maxFileSize = 2 * 1024 * 1024)
-public class UserApiServlet extends HttpServlet {
+public class ApiServlet extends HttpServlet {
     
     @Inject
     private UserController userController;

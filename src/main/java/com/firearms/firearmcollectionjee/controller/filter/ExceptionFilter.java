@@ -1,7 +1,7 @@
 package com.firearms.firearmcollectionjee.controller.filter;
 
 import com.firearms.firearmcollectionjee.controller.servlet.exception.HttpRequestException;
-import com.firearms.firearmcollectionjee.controller.servlet.UserApiServlet;
+import com.firearms.firearmcollectionjee.controller.servlet.ApiServlet;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @WebFilter(urlPatterns = {
-        UserApiServlet.Paths.API + "/*"
+        ApiServlet.Paths.API + "/*"
 })
 public class ExceptionFilter extends HttpFilter implements Filter {
 
