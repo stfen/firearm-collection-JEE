@@ -45,21 +45,12 @@ public class DataStorage {
         return users;
     }
 
-    /**
-     * Returns cloned list of all users to avoid exposing internal set references.
-     * @return list (possibly empty) of all stored users
-     */
     public synchronized List<User> findAllUsers() {
         return users.stream()
                 .map(cloningUtility::clone)
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Stores a new user (clone) if its id is unique.
-     * @param value user to store
-     * @throws IllegalArgumentException if a user with the provided id already exists
-     */
     public synchronized void createUser(User value) throws IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -70,11 +61,6 @@ public class DataStorage {
         users.add(cloningUtility.clone(value));
     }
 
-    /**
-     * Updates an existing user by id, replacing stored instance with a clone of the provided value.
-     * @param value user to update
-     * @throws IllegalArgumentException if the user does not already exist
-     */
     public synchronized void updateUser(User value) throws IllegalArgumentException {
         if (value == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -90,6 +76,40 @@ public class DataStorage {
         boolean isRemoved = users.removeIf(user -> user.getId().equals(value.getId()));
         if (!isRemoved) {
             throw new IllegalArgumentException("The user with id \"%s\" does not exist".formatted(value.getId()));
+        }
+    }
+
+    public synchronized List<Firearm> findAllFirearms() {
+        return firearms.stream()
+                .map(cloningUtility::clone)
+                .collect(Collectors.toList());
+    }
+
+    public synchronized void createFirearm(Firearm value) throws IllegalArgumentException {
+        if (value == null) {
+            throw new IllegalArgumentException("Firearm cannot be null");
+        }
+        if (firearms.stream().anyMatch(f -> f.getId().equals(value.getId()))) {
+            throw new IllegalArgumentException("The firearm id \"%s\" already exists".formatted(value.getId()));
+        }
+        firearms.add(cloningUtility.clone(value));
+    }
+
+    public synchronized void updateFirearm(Firearm value) throws IllegalArgumentException {
+        if (value == null) {
+            throw new IllegalArgumentException("Firearm cannot be null");
+        }
+        boolean removed = firearms.removeIf(f -> f.getId().equals(value.getId()));
+        if (!removed) {
+            throw new IllegalArgumentException("The firearm id \"%s\" does not exist".formatted(value.getId()));
+        }
+        firearms.add(cloningUtility.clone(value));
+    }
+
+    public synchronized void deleteFirearm(Firearm value) throws IllegalArgumentException {
+        boolean isRemoved = firearms.removeIf(f -> f.getId().equals(value.getId()));
+        if (!isRemoved) {
+            throw new IllegalArgumentException("The firearm id \"%s\" does not exist".formatted(value.getId()));
         }
     }
 }

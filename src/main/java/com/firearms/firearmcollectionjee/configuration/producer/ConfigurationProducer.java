@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.config;
+package com.firearms.firearmcollectionjee.configuration.producer;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;

@@ -1,7 +1,7 @@
 package com.firearms.firearmcollectionjee.controller.filter;
 
 import com.firearms.firearmcollectionjee.controller.servlet.exception.HttpRequestException;
-import com.firearms.firearmcollectionjee.web.UserApiServlet;
+import com.firearms.firearmcollectionjee.controller.servlet.UserApiServlet;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

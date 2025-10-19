@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.web.observer;
+package com.firearms.firearmcollectionjee.configuration.observer;
 
 import java.io.InputStream;
 import java.util.UUID;
@@ -10,9 +10,7 @@ import jakarta.enterprise.context.Initialized;
 import jakarta.enterprise.context.control.RequestContextController;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
-import jakarta.servlet.annotation.WebListener;
 import lombok.SneakyThrows;
 
 @ApplicationScoped

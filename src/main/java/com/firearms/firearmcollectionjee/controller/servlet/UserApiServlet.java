@@ -1,9 +1,8 @@
-package com.firearms.firearmcollectionjee.web;
+package com.firearms.firearmcollectionjee.controller.servlet;
 
 import com.firearms.firearmcollectionjee.controller.impl.UserController;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
-import com.firearms.firearmcollectionjee.model.User;
 import jakarta.inject.Inject;
 import jakarta.servlet.annotation.WebServlet;
 
@@ -11,7 +10,6 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
