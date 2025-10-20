@@ -2,11 +2,15 @@
 @base = http://{{host}}/firearm-collection-JEE/api
 @json = application/json
 
+################################################################################
+# USER ENDPOINTS
+################################################################################
+
 ### List all users
 GET {{base}}/users
 Accept: {{json}}
 
-### Get user by UUID (replace {{userId}} after creation)
+### Get user by UUID
 @userId = 70b21553-3690-4464-97a3-4481ce862b28
 GET {{base}}/users/{{userId}}
 Accept: {{json}}
@@ -15,59 +19,96 @@ Accept: {{json}}
 GET {{base}}/users/login/seima
 Accept: {{json}}
 
-### Create user (PUT)
+### Create user
 PUT {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57
 Content-Type: {{json}}
 
 {
-	"login": "newuser4",
-	"email": "newuser4@example.com",
+	"login": "newuser",
+	"email": "newuser@example.com",
 	"birthDate": "1998-05-21"
 }
 
-### Partial update (PATCH) – only changed fields
+### Update user (PATCH)
 PATCH {{base}}/users/{{userId}}
 Content-Type: {{json}}
-Accept: {{json}}
 
 {
-	"email": "newuser1.patched@example.com"
+	"email": "updated@example.com"
 }
 
-### Delete user
-DELETE {{base}}/users/{{userId}}
-
-### (Expect 404 if no avatar yet)
-GET {{base}}/users/{{userId}}/avatar
-Accept: image/png
-
-### Upload avatar (raw binary PUT)
+### Upload avatar
 PUT {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="avatar"; filename="avatar1.png"
+Content-Disposition: form-data; name="avatar"; filename="avatar.png"
 Content-Type: image/png
 
 < C:\Users\stefa\Pictures\Roblox\RobloxScreenShot20240923_224013968.png
 --boundary--
 
-### Retrieve uploaded avatar (PNG bytes)
+### Get avatar
 GET {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
 Accept: image/png
 
-### Delete avatar
-DELETE {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
+################################################################################
+# WEAPON FAMILY ENDPOINTS
+################################################################################
 
-### Create user with invalid email (expect 400)
-PUT {{base}}/users
-Content-Type: {{json}}
+### List all weapon families
+GET {{base}}/weapon-families
 Accept: {{json}}
 
+################################################################################
+# FIREARM ENDPOINTS
+################################################################################
+
+### List all firearms
+GET {{base}}/firearms
+Accept: {{json}}
+
+### Get specific firearm
+@firearmId = 11111111-2222-3333-4444-555555555555
+GET {{base}}/firearms/{{firearmId}}
+Accept: {{json}}
+
+### Create firearm
+@newFirearmId = f1f1f1f1-2f2f-3f3f-4f4f-5f5f5f5f5f5f
+PUT {{base}}/firearms/{{newFirearmId}}
+Content-Type: {{json}}
+
 {
-	"login": "badmail",
-	"email": "not-an-email",
-	"roles": ["USER"]
+	"name": "Test Rifle",
+	"caliber": 7.62,
+	"magazineCapacity": 20,
+	"weaponFamilyId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+	"productionDate": "2020-01-15",
+	"userId": "70b21512-1234-5678-97a3-4481ce862b26"
 }
 
+### Update firearm
+PATCH {{base}}/firearms/{{newFirearmId}}
+Content-Type: {{json}}
 
+{
+	"name": "Updated Test Rifle",
+	"magazineCapacity": 25
+}
+
+### Delete firearm
+DELETE {{base}}/firearms/{{newFirearmId}}
+
+################################################################################
+# RELATIONSHIP ENDPOINTS
+################################################################################
+
+### Get user's firearms
+@user1Id = 70b21553-3690-4464-97a3-4481ce862b28
+GET {{base}}/users/{{user1Id}}/firearms
+Accept: {{json}}
+
+### Get weapon family's firearms
+@assaultRifleId = a1b2c3d4-e5f6-7890-abcd-ef1234567890
+GET {{base}}/weapon-families/{{assaultRifleId}}/firearms
+Accept: {{json}}

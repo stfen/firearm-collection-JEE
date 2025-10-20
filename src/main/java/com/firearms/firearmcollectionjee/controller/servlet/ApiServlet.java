@@ -1,6 +1,10 @@
 package com.firearms.firearmcollectionjee.controller.servlet;
 
+import com.firearms.firearmcollectionjee.controller.impl.FirearmController;
 import com.firearms.firearmcollectionjee.controller.impl.UserController;
+import com.firearms.firearmcollectionjee.controller.impl.WeaponFamilyController;
+import com.firearms.firearmcollectionjee.dto.firearm.PatchFirearmRequest;
+import com.firearms.firearmcollectionjee.dto.firearm.PutFirearmRequest;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
 import jakarta.inject.Inject;
@@ -26,6 +30,12 @@ public class ApiServlet extends HttpServlet {
     
     @Inject
     private UserController userController;
+    
+    @Inject
+    private FirearmController firearmController;
+    
+    @Inject
+    private WeaponFamilyController weaponFamilyController;
     public static final class Paths {
         public static final String API = "/api";
     }
@@ -34,13 +44,18 @@ public class ApiServlet extends HttpServlet {
         private static final Pattern UUID = Pattern.compile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
 
         public static final Pattern USERS = Pattern.compile("/users/?");
-
         public static final Pattern USER = Pattern.compile("/users/(%s)".formatted(UUID.pattern()));
-
         public static final Pattern USER_AVATAR = Pattern.compile("/users/(%s)/avatar".formatted(UUID.pattern()));
-
         public static final Pattern USER_BY_LOGIN = Pattern.compile("/users/login/([A-Za-z0-9._-]+)");
 
+        // WeaponFamily patterns
+        public static final Pattern WEAPON_FAMILIES = Pattern.compile("/weapon-families/?");
+
+        // Firearm patterns
+        public static final Pattern FIREARMS = Pattern.compile("/firearms/?");
+        public static final Pattern FIREARM = Pattern.compile("/firearms/(%s)".formatted(UUID.pattern()));
+        public static final Pattern FIREARMS_BY_USER = Pattern.compile("/users/(%s)/firearms".formatted(UUID.pattern()));
+        public static final Pattern FIREARMS_BY_WEAPON_FAMILY = Pattern.compile("/weapon-families/(%s)/firearms".formatted(UUID.pattern()));
     }
 
     private final Jsonb jsonb = JsonbBuilder.create();
@@ -62,6 +77,7 @@ public class ApiServlet extends HttpServlet {
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
+            // User endpoints
             if (path.matches(Patterns.USERS.pattern())) {
                 response.setContentType("application/json");
                 response.getWriter().write(jsonb.toJson(userController.getAllUsers()));
@@ -87,6 +103,33 @@ public class ApiServlet extends HttpServlet {
                 String login = extractSingleGroup(Patterns.USER_BY_LOGIN, path);
                 response.getWriter().write(jsonb.toJson(userController.getUserByLogin(login)));
                 return;
+            } 
+            // WeaponFamily endpoints
+            else if (path.matches(Patterns.WEAPON_FAMILIES.pattern())) {
+                response.setContentType("application/json");
+                response.getWriter().write(jsonb.toJson(weaponFamilyController.getWeaponFamilies()));
+                return;
+            } 
+            // Firearm endpoints
+            else if (path.matches(Patterns.FIREARMS.pattern())) {
+                response.setContentType("application/json");
+                response.getWriter().write(jsonb.toJson(firearmController.getFirearms()));
+                return;
+            } else if (path.matches(Patterns.FIREARM.pattern())) {
+                response.setContentType("application/json");
+                UUID uuid = extractUuid(Patterns.FIREARM, path);
+                response.getWriter().write(jsonb.toJson(firearmController.getFirearm(uuid)));
+                return;
+            } else if (path.matches(Patterns.FIREARMS_BY_USER.pattern())) {
+                response.setContentType("application/json");
+                UUID userId = extractUuid(Patterns.FIREARMS_BY_USER, path);
+                response.getWriter().write(jsonb.toJson(firearmController.getUserFirearms(userId)));
+                return;
+            } else if (path.matches(Patterns.FIREARMS_BY_WEAPON_FAMILY.pattern())) {
+                response.setContentType("application/json");
+                UUID weaponFamilyId = extractUuid(Patterns.FIREARMS_BY_WEAPON_FAMILY, path);
+                response.getWriter().write(jsonb.toJson(firearmController.getWeaponFamilyFirearms(weaponFamilyId)));
+                return;
             }
         }
         response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -97,6 +140,7 @@ public class ApiServlet extends HttpServlet {
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
+            // User endpoints
             if (path.matches(Patterns.USER.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 userController.putUser(uuid, jsonb.fromJson(request.getReader(), PutUserRequest.class));
@@ -105,6 +149,13 @@ public class ApiServlet extends HttpServlet {
             } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
                 userController.putUserAvatar(uuid, request.getPart("avatar").getInputStream());
+                return;
+            } 
+            // Firearm endpoints
+            else if (path.matches(Patterns.FIREARM.pattern())) {
+                UUID uuid = extractUuid(Patterns.FIREARM, path);
+                firearmController.putFirearm(uuid, jsonb.fromJson(request.getReader(), PutFirearmRequest.class));
+                response.addHeader("Location", createUrl(request, Paths.API, "firearms", uuid.toString()));
                 return;
             }
         }
@@ -117,6 +168,7 @@ public class ApiServlet extends HttpServlet {
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
+            // User endpoints
             if (path.matches(Patterns.USER.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 userController.deleteUser(uuid);
@@ -124,6 +176,12 @@ public class ApiServlet extends HttpServlet {
             } else if (path.matches(Patterns.USER_AVATAR.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER_AVATAR, path);
                 userController.deleteUserAvatar(uuid);
+                return;
+            } 
+            // Firearm endpoints
+            else if (path.matches(Patterns.FIREARM.pattern())) {
+                UUID uuid = extractUuid(Patterns.FIREARM, path);
+                firearmController.deleteFirearm(uuid);
                 return;
             }
         }
@@ -135,9 +193,16 @@ public class ApiServlet extends HttpServlet {
         String path = parseRequestPath(request);
         String servletPath = request.getServletPath();
         if (Paths.API.equals(servletPath)) {
+            // User endpoints
             if (path.matches(Patterns.USER.pattern())) {
                 UUID uuid = extractUuid(Patterns.USER, path);
                 userController.patchUser(uuid, jsonb.fromJson(request.getReader(), PatchUserRequest.class));
+                return;
+            } 
+            // Firearm endpoints
+            else if (path.matches(Patterns.FIREARM.pattern())) {
+                UUID uuid = extractUuid(Patterns.FIREARM, path);
+                firearmController.patchFirearm(uuid, jsonb.fromJson(request.getReader(), PatchFirearmRequest.class));
                 return;
             }
         }

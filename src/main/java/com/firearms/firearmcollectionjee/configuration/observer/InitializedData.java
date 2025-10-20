@@ -80,21 +80,21 @@ public class InitializedData implements ServletContextListener {
                 .build();
 
         WeaponFamily shotgun = WeaponFamily.builder()
-                .id(UUID.fromString("b2c3d4e5-f6g7-8901-bcde-f23456789012"))
+                .id(UUID.fromString("b2c3d4e5-f6a7-8901-bcde-f23456789012"))
                 .name("Shotgun")
                 .optimalRange(50)
                 .ammoType(AmmoType.SHELL)
                 .build();
 
         WeaponFamily sniper = WeaponFamily.builder()
-                .id(UUID.fromString("c3d4e5f6-g7h8-9012-cdef-345678901234"))
+                .id(UUID.fromString("c3d4e5f6-a7b8-9012-cdef-345678901234"))
                 .name("Sniper Rifle")
                 .optimalRange(800)
                 .ammoType(AmmoType.BULLET)
                 .build();
 
         WeaponFamily pistol = WeaponFamily.builder()
-                .id(UUID.fromString("d4e5f6g7-h8i9-0123-defa-456789012345"))
+                .id(UUID.fromString("e5f6a7b8-c9d0-1234-efab-567890123456"))
                 .name("Pistol")
                 .optimalRange(100)
                 .ammoType(AmmoType.BULLET)

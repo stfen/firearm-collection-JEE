@@ -5,20 +5,10 @@ import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.model.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.FirearmRepositoryInterface;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
-import com.firearms.firearmcollectionjee.repository.impl.FirearmRepository;
-import com.firearms.firearmcollectionjee.repository.impl.UserRepository;
-import com.firearms.firearmcollectionjee.repository.impl.WeaponFamilyRepository;
+import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
 import lombok.NoArgsConstructor;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,12 +17,12 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public class FirearmService {
 
-    private final FirearmRepository firearmRepository;
-    private final UserRepository userRepository;
-    private final WeaponFamilyRepository weaponFamilyRepository;
+    private final FirearmRepositoryInterface firearmRepository;
+    private final UserRepositoryInterface userRepository;
+    private final WeaponFamilyRepositoryInterface weaponFamilyRepository;
 
     @Inject
-    public FirearmService(FirearmRepository firearmRepository, UserRepository userRepository, WeaponFamilyRepository weaponFamilyRepository) {
+    public FirearmService(FirearmRepositoryInterface firearmRepository, UserRepositoryInterface userRepository, WeaponFamilyRepositoryInterface weaponFamilyRepository) {
         this.firearmRepository = firearmRepository;
         this.userRepository = userRepository;
         this.weaponFamilyRepository = weaponFamilyRepository;
