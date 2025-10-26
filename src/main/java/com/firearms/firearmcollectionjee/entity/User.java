@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.model;
+package com.firearms.firearmcollectionjee.entity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.firearms.firearmcollectionjee.dto.user.function;
 
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
-import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.entity.User;
 
 import java.util.function.BiFunction;
 

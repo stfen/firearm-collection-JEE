@@ -4,10 +4,10 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import com.firearms.firearmcollectionjee.model.Firearm;
-import com.firearms.firearmcollectionjee.model.User;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
-import com.firearms.firearmcollectionjee.model.enums.AmmoType;
+import com.firearms.firearmcollectionjee.entity.Firearm;
+import com.firearms.firearmcollectionjee.entity.User;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.enums.AmmoType;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import com.firearms.firearmcollectionjee.service.UserService;
 import com.firearms.firearmcollectionjee.service.WeaponFamilyService;

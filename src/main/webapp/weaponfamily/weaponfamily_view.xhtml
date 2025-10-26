@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{weaponFamilyView.idParam}" />
+        <f:viewAction action="#{weaponFamilyView.init}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <h:panelGroup>
+            <h2>Informacje o kategorii</h2>
+
+            <h:panelGrid columns="2" rendered="#{not empty weaponFamilyView.weaponFamily}">
+                <h:outputLabel value="Nazwa:" />
+                <h:outputText value="#{weaponFamilyView.weaponFamily.name}" />
+
+                <h:outputLabel value="Optymalny zasięg:" />
+                <h:outputText value="#{weaponFamilyView.weaponFamily.optimalRange}" />
+
+                <h:outputLabel value="Ammo type:" />
+                <h:outputText value="#{weaponFamilyView.weaponFamily.ammoType}" />
+            </h:panelGrid>
+
+            <h3>Elementy (Firearms) w tej kategorii</h3>
+            <h:dataTable value="#{weaponFamilyView.firearms}" var="f" styleClass="table">
+                <h:column>
+                    <f:facet name="header">Nazwa</f:facet>
+                    <h:link value="#{f.name}" outcome="/firearm/firearm_view.xhtml">
+                        <f:param name="id" value="#{f.id}" />
+                    </h:link>
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Kaliber</f:facet>
+                    #{f.caliber}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Magazyn</f:facet>
+                    #{f.magazineCapacity}
+                </h:column>
+                <h:column>
+                    <f:facet name="header">Akcje</f:facet>
+                    <h:form>
+                        <h:commandButton value="Usuń" action="#{weaponFamilyView.deleteFirearm(f.id)}" onclick="if(!confirm('Usuń ten element?')) return false;" />
+                    </h:form>
+                </h:column>
+            </h:dataTable>
+
+            <h:panelGroup rendered="#{empty weaponFamilyView.weaponFamily}">
+                <p class="text-danger">Nie znaleziono kategorii o podanym id.</p>
+            </h:panelGroup>
+        </h:panelGroup>
+    </ui:define>
+
+</ui:composition>

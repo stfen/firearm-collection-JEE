@@ -8,7 +8,7 @@ import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmResponse;
 import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmsResponse;
 import com.firearms.firearmcollectionjee.dto.firearm.PatchFirearmRequest;
 import com.firearms.firearmcollectionjee.dto.firearm.PutFirearmRequest;
-import com.firearms.firearmcollectionjee.model.Firearm;
+import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

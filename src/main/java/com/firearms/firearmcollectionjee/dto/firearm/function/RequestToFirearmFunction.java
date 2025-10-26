@@ -1,8 +1,8 @@
 package com.firearms.firearmcollectionjee.dto.firearm.function;
 
 import com.firearms.firearmcollectionjee.dto.firearm.PutFirearmRequest;
-import com.firearms.firearmcollectionjee.model.Firearm;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.Firearm;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 
 import java.util.UUID;
 import java.util.function.BiFunction;

@@ -1,11 +1,10 @@
 package com.firearms.firearmcollectionjee.service;
 
-import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -16,9 +15,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Service class for User business logic.

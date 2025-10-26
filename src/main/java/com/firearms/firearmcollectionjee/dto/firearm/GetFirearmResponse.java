@@ -1,6 +1,5 @@
 package com.firearms.firearmcollectionjee.dto.firearm;
 
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
 import lombok.*;
 
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
 package com.firearms.firearmcollectionjee.repository.api;
 
-import com.firearms.firearmcollectionjee.model.Firearm;
-import com.firearms.firearmcollectionjee.model.User;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.Firearm;
+import com.firearms.firearmcollectionjee.entity.User;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 
 import java.util.List;
 import java.util.Optional;

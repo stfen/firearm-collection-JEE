@@ -1,7 +1,7 @@
 package com.firearms.firearmcollectionjee.dto.firearm.function;
 
 import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmsResponse;
-import com.firearms.firearmcollectionjee.model.Firearm;
+import com.firearms.firearmcollectionjee.entity.Firearm;
 
 import java.util.List;
 import java.util.function.Function;

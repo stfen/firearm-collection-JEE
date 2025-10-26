@@ -1,10 +1,9 @@
 package com.firearms.firearmcollectionjee.repository.api;
 
-import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.entity.User;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 /**

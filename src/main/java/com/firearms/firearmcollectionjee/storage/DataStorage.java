@@ -1,8 +1,8 @@
 package com.firearms.firearmcollectionjee.storage;
 
-import com.firearms.firearmcollectionjee.model.Firearm;
-import com.firearms.firearmcollectionjee.model.User;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.Firearm;
+import com.firearms.firearmcollectionjee.entity.User;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.serialization.component.CloningUtility;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

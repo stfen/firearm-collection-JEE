@@ -1,6 +1,6 @@
 package com.firearms.firearmcollectionjee.dto.weaponfamily;
 
-import com.firearms.firearmcollectionjee.model.enums.AmmoType;
+import com.firearms.firearmcollectionjee.entity.enums.AmmoType;
 import lombok.*;
 
 import java.util.UUID;

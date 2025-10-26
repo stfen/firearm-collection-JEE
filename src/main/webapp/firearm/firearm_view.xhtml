@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
+
+    <f:metadata>
+        <f:viewParam name="id" value="#{firearmView.id}" required="true" />
+        <f:viewAction action="#{firearmView.init()}" />
+    </f:metadata>
+
+    <ui:define name="content">
+        <article>
+            <header><h2><h:outputText value="#{firearmView.firearm.name}"/></h2></header>
+            <div class="container">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row mb-2">
+                            <div class="col-6">Kaliber</div>
+                            <div class="col-6"><h:outputText value="#{firearmView.firearm.caliber}"/></div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-6">Pojemność magazynka</div>
+                            <div class="col-6"><h:outputText value="#{firearmView.firearm.magazineCapacity}"/></div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-6">Data produkcji</div>
+                            <div class="col-6"><h:outputText value="#{firearmView.firearm.productionDate}"/></div>
+                        </div>
+                    </div>
+
+                    <div class="col-3">
+                        <h:graphicImage alt="Firearm image" styleClass="w-100" value="/api/firearms/#{firearmView.id}/portrait"/>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </ui:define>
+
+</ui:composition>

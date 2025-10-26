@@ -3,7 +3,7 @@ package com.firearms.firearmcollectionjee.controller.impl;
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.WeaponFamilyControllerInterface;
 import com.firearms.firearmcollectionjee.dto.weaponfamily.GetWeaponFamiliesResponse;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.service.WeaponFamilyService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

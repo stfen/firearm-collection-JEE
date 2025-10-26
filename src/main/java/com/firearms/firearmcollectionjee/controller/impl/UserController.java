@@ -8,15 +8,11 @@ import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
 import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
-import com.firearms.firearmcollectionjee.model.User;
 import com.firearms.firearmcollectionjee.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
 
-import javax.swing.*;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 /**

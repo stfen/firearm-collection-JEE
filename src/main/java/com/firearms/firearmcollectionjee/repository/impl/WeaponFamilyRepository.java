@@ -1,7 +1,6 @@
 package com.firearms.firearmcollectionjee.repository.impl;
 
-import com.firearms.firearmcollectionjee.model.Firearm;
-import com.firearms.firearmcollectionjee.model.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
 import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.enterprise.context.RequestScoped;

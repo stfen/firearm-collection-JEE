@@ -1,6 +1,5 @@
-package com.firearms.firearmcollectionjee.model;
+package com.firearms.firearmcollectionjee.entity;
 
-import com.firearms.firearmcollectionjee.model.enums.AmmoType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,11 +7,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -26,9 +24,12 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
-public class WeaponFamily implements Serializable {
+public class Firearm implements Serializable {
     private UUID id;
     private String name;
-    private int optimalRange;
-    private AmmoType ammoType;
+    private double caliber;
+    private int magazineCapacity;
+    private WeaponFamily weaponFamily;
+    private LocalDate productionDate;
+    private User user;
 }

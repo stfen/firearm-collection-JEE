@@ -1,18 +1,15 @@
 package com.firearms.firearmcollectionjee.repository.impl;
 
-import com.firearms.firearmcollectionjee.model.User;
+import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Implementation of UserRepositoryInterface.

@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.model.enums;
+package com.firearms.firearmcollectionjee.entity.enums;
 
 public enum AmmoType {
     BULLET,
