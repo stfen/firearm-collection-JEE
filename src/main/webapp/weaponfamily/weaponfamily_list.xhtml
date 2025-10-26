@@ -7,19 +7,12 @@
                 template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
-        <h:outputStylesheet library="weaponfamily" name="css/weaponfamily_list.css"/>
 
-        <article class="text--justified">
-            <header><h2>Lista kategorii (Weapon Families)</h2></header>
+        <article class="card-like">
+            <header class="article-header"><h2 class="article-title">Lista kategorii (Weapon Families)</h2></header>
 
             <h:dataTable value="#{weaponFamilyList.weaponFamilies.weaponFamilies}" var="wf"
-                         styleClass="table align-middle mb-0 bg-white" headerClass="bg-light">
-                <h:column>
-                    <f:facet name="header">Ikona</f:facet>
-                    <h:graphicImage styleClass="portrait rounded-circle" alt="Family icon"
-                                    value="/resources/default/images/logo.svg"/>
-                </h:column>
-
+                         styleClass="table-clean" headerClass="bg-light">
                 <h:column>
                     <f:facet name="header">Nazwa</f:facet>
                     <h:outputText value="#{wf.name}"/>
@@ -43,13 +36,6 @@
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">Edytuj</f:facet>
-                    <h:link outcome="/weaponfamily/weaponfamily_edit.xhtml" value="Edytuj">
-                        <f:param name="id" value="#{wf.id}"/>
-                    </h:link>
-                </h:column>
-
-                <h:column>
                     <f:facet name="header">Usuń</f:facet>
                     <h:form>
                         <h:commandButton styleClass="btn" value="Usuń"
@@ -57,10 +43,6 @@
                                          onclick="if(!confirm('Usuń kategorię wraz z elementami?')) return false;"/>
                     </h:form>
                 </h:column>
-
-                <f:facet name="footer">
-                    <h:button styleClass="btn" outcome="/weaponfamily/weaponfamily_create.xhtml" value="Utwórz nową kategorię"/>
-                </f:facet>
             </h:dataTable>
         </article>
     </ui:define>

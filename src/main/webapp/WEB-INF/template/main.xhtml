@@ -19,14 +19,6 @@
 
     <h:body>
         <div class="container">
-            <header class="mb-4 mt-4 d-flex align-items-center">
-                <h:graphicImage library="default" name="images/logo.svg" styleClass="me-3 site-logo" alt="Firearm Collection logo"/>
-                <div>
-                    <h1 class="h3 mb-0">Firearm Collection</h1>
-                    <p class="text-muted mb-0">Simple inventory and information system for firearms (JSF / Jakarta EE)</p>
-                </div>
-            </header>
-
             <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-3">
                 <div class="container-fluid">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -34,13 +26,7 @@
                             <h:link styleClass="nav-link" outcome="/index.xhtml">Home</h:link>
                         </li>
                         <li class="nav-item">
-                            <h:link styleClass="nav-link" outcome="/firearm/firearm_list.xhtml">Firearms</h:link>
-                        </li>
-                        <li class="nav-item">
                             <h:link styleClass="nav-link" outcome="/weaponfamily/weaponfamily_list.xhtml">Categories</h:link>
-                        </li>
-                        <li class="nav-item">
-                            <h:link styleClass="nav-link" outcome="/firearm/add_firearm.xhtml">Add firearm</h:link>
                         </li>
                     </ul>
                 </div>
@@ -49,15 +35,6 @@
             <main class="mb-4 mt-4">
                 <ui:insert name="content"/>
             </main>
-
-            <footer class="text-center text-lg-start bg-light text-muted p-2">
-                <div class="text-center">
-                    &#169; 2023-2025 Firearm Collection — Wykonane w ramach zajęć laboratoryjnych
-                </div>
-                <div class="text-center small">
-                    Projekt dydaktyczny — nie używać do celów produkcyjnych.
-                </div>
-            </footer>
         </div>
     </h:body>
 </f:view>
