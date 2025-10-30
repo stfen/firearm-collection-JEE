@@ -11,15 +11,18 @@ public class RequestToFirearmFunction implements BiFunction<UUID, PutFirearmRequ
     
     @Override
     public Firearm apply(UUID id, PutFirearmRequest request) {
-        return Firearm.builder()
-                .id(id)
-                .name(request.getName())
-                .caliber(request.getCaliber())
-                .magazineCapacity(request.getMagazineCapacity())
-                .productionDate(request.getProductionDate())
-                .weaponFamily(WeaponFamily.builder()
-                        .id(request.getWeaponFamilyId())
-                        .build())
-                .build();
+    return Firearm.builder()
+        .id(id)
+        .name(request.getName())
+        .caliber(request.getCaliber())
+        .magazineCapacity(request.getMagazineCapacity())
+        .productionDate(request.getProductionDate())
+        .weaponFamily(WeaponFamily.builder()
+            .id(request.getWeaponFamilyId())
+            .build())
+        .user(com.firearms.firearmcollectionjee.entity.User.builder()
+            .id(request.getUserId())
+            .build())
+        .build();
     }
 }

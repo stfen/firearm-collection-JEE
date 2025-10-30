@@ -18,5 +18,6 @@ public class PutFirearmRequest {
     private double caliber;
     private int magazineCapacity;
     private LocalDate productionDate;
+    private UUID userId;
     private UUID weaponFamilyId;
 }

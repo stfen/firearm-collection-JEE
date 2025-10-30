@@ -4,31 +4,58 @@ import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
 import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.UUID;
 
 /**
- * Controller interface defining user-related operations exposed to the presentation layer.
- * This is a thin abstraction over the service layer to decouple web / UI layer from business logic.
+ * JAX-RS annotated controller interface exposing user-related REST endpoints.
  */
+@Path("")
 public interface UserControllerInterface {
 
-    void putUser(UUID id, PutUserRequest request);
+    @PUT
+    @Path("/users/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void putUser(@PathParam("id") UUID id, PutUserRequest request);
 
-    void patchUser(UUID id, PatchUserRequest request);
+    @PATCH
+    @Path("/users/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void patchUser(@PathParam("id") UUID id, PatchUserRequest request);
 
-    GetUserResponse getUserById(UUID id);
+    @GET
+    @Path("/users/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    GetUserResponse getUserById(@PathParam("id") UUID id);
 
-    GetUserResponse getUserByLogin(String login);
+    @GET
+    @Path("/users/login/{login}")
+    @Produces(MediaType.APPLICATION_JSON)
+    GetUserResponse getUserByLogin(@PathParam("login") String login);
 
+    @GET
+    @Path("/users")
+    @Produces(MediaType.APPLICATION_JSON)
     GetUsersResponse getAllUsers();
 
-    void deleteUser(UUID id);
+    @DELETE
+    @Path("/users/{id}")
+    void deleteUser(@PathParam("id") UUID id);
 
     /* Avatar (image) operations */
-    byte[] getUserAvatar(UUID id);
+    @GET
+    @Path("/users/{id}/avatar")
+    @Produces("image/png")
+    byte[] getUserAvatar(@PathParam("id") UUID id);
 
-    void putUserAvatar(UUID id, java.io.InputStream avatarStream);
+    @PUT
+    @Path("/users/{id}/avatar")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    void putUserAvatar(@PathParam("id") UUID id, @jakarta.ws.rs.core.Context jakarta.servlet.http.HttpServletRequest request);
 
-    void deleteUserAvatar(UUID id);
+    @DELETE
+    @Path("/users/{id}/avatar")
+    void deleteUserAvatar(@PathParam("id") UUID id);
 }

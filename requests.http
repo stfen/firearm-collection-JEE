@@ -1,5 +1,5 @@
 @host = localhost:9080
-@base = http://{{host}}/firearm-collection-JEE/api
+@base = http://{{host}}/firearm-collection-JEE-1.0-SNAPSHOT/api
 @json = application/json
 
 ################################################################################
@@ -57,7 +57,7 @@ Accept: image/png
 ################################################################################
 
 ### List all weapon families
-GET {{base}}/weapon-families
+GET {{base}}/weaponfamilies
 Accept: {{json}}
 
 ################################################################################
@@ -74,7 +74,7 @@ GET {{base}}/firearms/{{firearmId}}
 Accept: {{json}}
 
 ### Create firearm
-@newFirearmId = f1f1f1f1-2f2f-3f3f-4f4f-5f5f5f5f5f5f
+@newFirearmId = f1f1f1f1-2f2f-3f3f-4f4f-5f5f5f5f5e7f
 PUT {{base}}/firearms/{{newFirearmId}}
 Content-Type: {{json}}
 
@@ -88,7 +88,7 @@ Content-Type: {{json}}
 }
 
 ### Update firearm
-PATCH {{base}}/firearms/{{newFirearmId}}
+PATCH {{base}}/firearms/{{firearmId}}
 Content-Type: {{json}}
 
 {
@@ -97,7 +97,7 @@ Content-Type: {{json}}
 }
 
 ### Delete firearm
-DELETE {{base}}/firearms/{{newFirearmId}}
+DELETE {{base}}/firearms/{{firearmId}}
 
 ################################################################################
 # RELATIONSHIP ENDPOINTS
@@ -110,5 +110,5 @@ Accept: {{json}}
 
 ### Get weapon family's firearms
 @assaultRifleId = a1b2c3d4-e5f6-7890-abcd-ef1234567890
-GET {{base}}/weapon-families/{{assaultRifleId}}/firearms
+GET {{base}}/weaponfamilies/{{assaultRifleId}}/firearms
 Accept: {{json}}

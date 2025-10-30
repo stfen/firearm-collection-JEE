@@ -2,8 +2,9 @@ package com.firearms.firearmcollectionjee.controller.impl;
 
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.UserControllerInterface;
-import com.firearms.firearmcollectionjee.controller.servlet.exception.BadRequestException;
-import com.firearms.firearmcollectionjee.controller.servlet.exception.NotFoundException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
 import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
 import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
 import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
@@ -20,6 +21,7 @@ import java.util.UUID;
  * This class contains no framework annotations so it can be used in plain Java or wired manually.
  */
 @RequestScoped
+@Path("")
 @NoArgsConstructor(force = true)
 public class UserController implements UserControllerInterface {
 
@@ -85,9 +87,21 @@ public class UserController implements UserControllerInterface {
     }
 
     @Override
-    public void putUserAvatar(UUID id, java.io.InputStream avatarStream) {
+    public void putUserAvatar(UUID id, jakarta.servlet.http.HttpServletRequest request) {
         userService.findById(id).ifPresentOrElse(
-                u -> userService.updateAvatar(id, avatarStream),
+                u -> {
+                    try {
+                        jakarta.servlet.http.Part part = request.getPart("avatar");
+                        if (part == null) {
+                            throw new BadRequestException();
+                        }
+                        try (java.io.InputStream is = part.getInputStream()) {
+                            userService.updateAvatar(id, is);
+                        }
+                    } catch (Exception e) {
+                        throw new BadRequestException();
+                    }
+                },
                 () -> { throw new NotFoundException(); }
         );
     }
