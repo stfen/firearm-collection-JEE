@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.controller.impl;
 
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.UserControllerInterface;
+import jakarta.transaction.TransactionalException;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
@@ -13,8 +14,10 @@ import com.firearms.firearmcollectionjee.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Simple implementation of {@link UserControllerInterface} which delegates calls to {@link UserService}.
@@ -22,6 +25,7 @@ import java.util.UUID;
  */
 @RequestScoped
 @Path("")
+@Log
 @NoArgsConstructor(force = true)
 public class UserController implements UserControllerInterface {
 
@@ -39,8 +43,12 @@ public class UserController implements UserControllerInterface {
     public void putUser(UUID id, PutUserRequest request) {
         try {
             userService.createUser(factory.requestToUserFunction().apply(id, request));
-        } catch (IllegalArgumentException exception) {
-            throw new BadRequestException();
+        } catch (TransactionalException ex) {
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, ex.getMessage(), ex);
+                throw new BadRequestException(ex);
+            }
+            throw ex;
         }
     }
 

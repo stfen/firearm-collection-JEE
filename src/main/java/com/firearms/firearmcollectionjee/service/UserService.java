@@ -5,6 +5,7 @@ import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class UserService {
      * @return the created user
      * @throws IllegalArgumentException if validation fails
      */
+    @Transactional
     public void createUser(User user) {
         validateUser(user);
 
@@ -60,6 +62,7 @@ public class UserService {
      * @return the updated user
      * @throws IllegalArgumentException if validation fails or user not found
      */
+    @Transactional
     public void updateUser(User user) {
         if (user.getId() == null) {
             throw new IllegalArgumentException("User ID cannot be null for update operation");
@@ -121,6 +124,7 @@ public class UserService {
      * Delete user by ID.
      * @param id the user ID
      */
+    @Transactional
     public void deleteUser(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("User ID cannot be null");

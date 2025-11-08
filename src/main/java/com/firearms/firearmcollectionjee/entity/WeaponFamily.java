@@ -41,6 +41,6 @@ public class WeaponFamily implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "weapon_family", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "weaponFamily", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Firearm> firearms;
 }

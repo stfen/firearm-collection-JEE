@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.controller.impl;
 
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.FirearmControllerInterface;
+import jakarta.transaction.TransactionalException;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;
@@ -23,12 +24,15 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.UriInfo;
 import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 
 
 @Path("")
+@Log
 public class FirearmController implements FirearmControllerInterface {
 
     private final FirearmService firearmService;
@@ -90,8 +94,12 @@ public class FirearmController implements FirearmControllerInterface {
             .toString();
         response.setHeader("Location", location);
         throw new WebApplicationException(Response.status(Response.Status.CREATED).build());
-        } catch (IllegalArgumentException exception) {
-            throw new BadRequestException();
+        } catch (TransactionalException ex) {
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, ex.getMessage(), ex);
+                throw new BadRequestException(ex);
+            }
+            throw ex;
         }
     }
 

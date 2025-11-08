@@ -5,6 +5,7 @@ import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryIn
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import com.firearms.firearmcollectionjee.service.FirearmService;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class WeaponFamilyService {
         this.firearmService = firearmService;
     }
 
+    @Transactional
     public void createWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
             throw new IllegalArgumentException("WeaponFamily cannot be null");
@@ -30,6 +32,7 @@ public class WeaponFamilyService {
         weaponFamilyRepository.create(weaponFamily);
     }
 
+    @Transactional
     public void updateWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
             throw new IllegalArgumentException("WeaponFamily cannot be null");
@@ -44,14 +47,9 @@ public class WeaponFamilyService {
         return weaponFamilyRepository.findById(id);
     }
 
+    @Transactional
     public void deleteWeaponFamily(UUID id) {
-        if (id == null) {
-            throw new IllegalArgumentException("WeaponFamily ID cannot be null");
-        }
-        // delete all firearms that belong to this weapon family first
-        firearmService.findAllByWeaponFamily(id).ifPresent(list -> list.forEach(f -> firearmService.deleteFirearm(f.getId())));
-        // then delete the family itself
-        weaponFamilyRepository.findById(id).ifPresent(weaponFamilyRepository::delete);
+        weaponFamilyRepository.delete(weaponFamilyRepository.findById(id).orElseThrow());
     }
 
     public List<WeaponFamily> getAllWeaponFamilies() {

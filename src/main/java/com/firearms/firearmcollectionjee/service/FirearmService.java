@@ -6,6 +6,7 @@ import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Optional;
@@ -26,14 +27,23 @@ public class FirearmService {
         this.weaponFamilyRepository = weaponFamilyRepository;
     }
 
+    @Transactional
     public void createFirearm(Firearm firearm) {
-       firearmRepository.create(firearm);
+        if (firearmRepository.findById(firearm.getId()).isPresent()) {
+            throw new IllegalArgumentException("Firearm already exists.");
+        }
+        if (weaponFamilyRepository.findById(firearm.getWeaponFamily().getId()).isEmpty()) {
+            throw new IllegalArgumentException("WeaponFamily does not exists.");
+        }
+        firearmRepository.create(firearm);
     }
 
+    @Transactional
     public void updateFirearm(Firearm firearm) {
         firearmRepository.update(firearm);
     }
 
+    @Transactional
     public void deleteFirearm(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("Firearm ID cannot be null");
