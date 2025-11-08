@@ -2,9 +2,9 @@ package com.firearms.firearmcollectionjee.repository.impl;
 
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
-import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -19,70 +19,73 @@ import java.util.UUID;
 @NoArgsConstructor(force = true)
 public class UserRepository implements UserRepositoryInterface {
     
-    private final DataStorage dataStorage;
+    private EntityManager em;
 
-    @Inject
-    public UserRepository(DataStorage dataStorage) {
-        this.dataStorage = dataStorage;
+    @PersistenceContext
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
     }
     
     @Override
     public void create(User user) {
-        dataStorage.createUser(user);
+        em.persist(user);
     }
 
     @Override
     public void update(User user) {
-        dataStorage.updateUser(user);
+        em.merge(user);
     }
 
     @Override
     public void delete(User entity) {
-        dataStorage.deleteUser(entity);
+        em.remove(em.find(User.class, entity.getId()));
     }
 
 
     @Override
     public Optional<User> findById(UUID id) {
-        return dataStorage.findAllUsers().stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst();
+    return Optional.ofNullable(em.find(User.class, id));
     }
     
     @Override
     public Optional<User> findByLogin(String login) {
-        return dataStorage.findAllUsers().stream()
-                .filter(user -> login.equals(user.getLogin()))
-                .findFirst();
+    return em.createQuery("select u from User u where u.login = :login", User.class)
+        .setParameter("login", login)
+        .getResultStream()
+        .findFirst();
     }
     
     @Override
     public Optional<User> findByEmail(String email) {
-        return dataStorage.findAllUsers().stream()
-                .filter(user -> email.equals(user.getEmail()))
-                .findFirst();
+    return em.createQuery("select u from User u where u.email = :email", User.class)
+        .setParameter("email", email)
+        .getResultStream()
+        .findFirst();
     }
     
     @Override
     public List<User> findAll() {
-        return dataStorage.findAllUsers();
+    return em.createQuery("select u from User u", User.class).getResultList();
     }
     
     @Override
     public boolean existsById(UUID id) {
-        return dataStorage.findAllUsers().stream()
-                .anyMatch(user -> user.getId().equals(id));
+    return em.find(User.class, id) != null;
     }
     
     @Override
     public boolean existsByLogin(String login) {
-        return dataStorage.findAllUsers().stream()
-                .anyMatch(user -> login.equals(user.getLogin()));
+    Long count = em.createQuery("select count(u) from User u where u.login = :login", Long.class)
+        .setParameter("login", login)
+        .getSingleResult();
+    return count != null && count > 0;
     }
     
     @Override
     public boolean existsByEmail(String email) {
-        return dataStorage.findAllUsers().stream()
-                .anyMatch(user -> email.equals(user.getEmail()));
+    Long count = em.createQuery("select count(u) from User u where u.email = :email", Long.class)
+        .setParameter("email", email)
+        .getSingleResult();
+    return count != null && count > 0;
     }
 }

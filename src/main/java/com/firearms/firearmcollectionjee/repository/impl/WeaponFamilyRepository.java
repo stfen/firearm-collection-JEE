@@ -2,48 +2,48 @@ package com.firearms.firearmcollectionjee.repository.impl;
 
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
-import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @RequestScoped
+@NoArgsConstructor(force = true)
 public class WeaponFamilyRepository implements WeaponFamilyRepositoryInterface {
 
-    private final DataStorage dataStorage;
+    private EntityManager em;
 
-    @Inject
-    public WeaponFamilyRepository(DataStorage dataStorage) {
-        this.dataStorage = dataStorage;
+    @PersistenceContext
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
     }
 
     @Override
     public void create(WeaponFamily weaponFamily) {
-        dataStorage.createWeaponFamily(weaponFamily);
+        em.persist(weaponFamily);
     }
 
     @Override
     public void update(WeaponFamily weaponFamily) {
-        dataStorage.updateWeaponFamily(weaponFamily);
+        em.merge(weaponFamily);
     }
 
     @Override
     public void delete(WeaponFamily weaponFamily) {
-        dataStorage.deleteWeaponFamily(weaponFamily);
+        em.remove(em.find(WeaponFamily.class, weaponFamily.getId()));
     }
 
     @Override
     public Optional<WeaponFamily> findById(UUID id) {
-        return dataStorage.findAllWeaponFamilies().stream()
-                .filter(weaponFamily -> weaponFamily.getId().equals(id))
-                .findFirst();
+        return Optional.ofNullable(em.find(WeaponFamily.class, id));
     }
 
     @Override
     public List<WeaponFamily> findAll(){
-        return dataStorage.findAllWeaponFamilies();
+        return em.createQuery("select w from WeaponFamily w", WeaponFamily.class).getResultList();
     }
 }

@@ -4,9 +4,10 @@ import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.FirearmRepositoryInterface;
-import com.firearms.firearmcollectionjee.storage.DataStorage;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -18,52 +19,50 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(force = true)
 public class FirearmRepository implements FirearmRepositoryInterface {
 
-    private final DataStorage dataStorage;
+    private EntityManager em;
 
-    @Inject
-    public FirearmRepository(DataStorage dataStorage) {
-        this.dataStorage = dataStorage;
+    @PersistenceContext
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
     }
 
     @Override
     public void create(Firearm firearm) {
-        dataStorage.createFirearm(firearm);
+        em.persist(firearm);
     }
 
     @Override
     public void update(Firearm firearm) {
-        dataStorage.updateFirearm(firearm);
+        em.merge(firearm);
     }
 
     @Override
     public void delete(Firearm firearm) {
-        dataStorage.deleteFirearm(firearm);
+        em.remove(em.find(Firearm.class, firearm.getId()));
     }
 
 
     @Override
     public Optional<Firearm> findById(UUID id) {
-        return dataStorage.findAllFirearms().stream()
-                .filter(firearm -> firearm.getId().equals(id))
-                .findFirst();
+        return Optional.ofNullable(em.find(Firearm.class, id));
     }
 
     @Override
     public List<Firearm> findAllByUser(User user) {
-        return dataStorage.findAllFirearms().stream()
-                .filter(firearm -> user.equals(firearm.getUser()))
-                .collect(Collectors.toList());
+        return em.createQuery("select f from Firearm f where f.user = :user", Firearm.class)
+                .setParameter("user", user)
+                .getResultList();
     }
 
     @Override
     public List<Firearm> findAllByWeaponFamily(WeaponFamily weaponFamily) {
-        return dataStorage.findAllFirearms().stream()
-                .filter(firearm -> weaponFamily.equals(firearm.getWeaponFamily()))
-                .collect(Collectors.toList());
+        return em.createQuery("select f from Firearm f where f.weaponFamily = :weapon_family", Firearm.class)
+                .setParameter("weapon_family", weaponFamily)
+                .getResultList();
     }
 
     @Override
     public List<Firearm> findAll(){
-        return dataStorage.findAllFirearms();
+        return em.createQuery("select f from Firearm f", Firearm.class).getResultList();
     }
 }
