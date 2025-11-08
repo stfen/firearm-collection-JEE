@@ -1,6 +1,7 @@
 package com.firearms.firearmcollectionjee.entity;
 
 import com.firearms.firearmcollectionjee.entity.enums.AmmoType;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -24,9 +26,21 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
+@Entity
+@Table(name = "weapon_family")
 public class WeaponFamily implements Serializable {
+    @Id
     private UUID id;
     private String name;
+
+    @Column(name = "optimal_range")
     private int optimalRange;
+
+    @Column(name = "ammo_type")
     private AmmoType ammoType;
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "weapon_family", cascade = CascadeType.REMOVE)
+    private List<Firearm> firearms;
 }
