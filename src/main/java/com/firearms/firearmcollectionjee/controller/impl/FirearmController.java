@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.controller.impl;
 
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.FirearmControllerInterface;
+import com.firearms.firearmcollectionjee.dto.firearm.*;
 import jakarta.transaction.TransactionalException;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
@@ -9,24 +10,12 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
-import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmResponse;
-import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmsResponse;
-import com.firearms.firearmcollectionjee.dto.firearm.PatchFirearmRequest;
-import com.firearms.firearmcollectionjee.dto.firearm.PutFirearmRequest;
-import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.service.FirearmService;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.UriInfo;
-import lombok.NoArgsConstructor;
 import lombok.extern.java.Log;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -84,16 +73,38 @@ public class FirearmController implements FirearmControllerInterface {
     @Override
     public void putFirearm(UUID id, PutFirearmRequest request) {
         try {
-        firearmService.createFirearm(factory.requestToFirearmFunction().apply(id, request));
-        // Build Location header explicitly to avoid method-ref UriBuilder issues at runtime
-        String location = uriInfo.getBaseUriBuilder()
-            .path("api")
-            .path("firearms")
-            .path(id.toString())
-            .build()
-            .toString();
-        response.setHeader("Location", location);
-        throw new WebApplicationException(Response.status(Response.Status.CREATED).build());
+            firearmService.createFirearm(factory.requestToFirearmFunction().apply(id, request));
+            String location = uriInfo.getBaseUriBuilder()
+                .path("api")
+                .path("firearms")
+                .path(id.toString())
+                .build()
+                .toString();
+            response.setHeader("Location", location);
+            throw new WebApplicationException(Response.status(Response.Status.CREATED).build());
+        } catch (TransactionalException ex) {
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, ex.getMessage(), ex);
+                throw new BadRequestException(ex);
+            }
+            throw ex;
+        }
+    }
+
+    @Override
+    public void putFirearmWithWeaponFamilyId(UUID id, UUID weaponFamilyId, PutFirearmWithNoWeaponFamilyRequest request) {
+        try {
+            firearmService.createFirearm(
+                    factory.requestToFirearmWithNoWeaponFamilyFunction().apply(id, weaponFamilyId, request)
+            );
+            String location = uriInfo.getBaseUriBuilder()
+                    .path("api")
+                    .path("firearms")
+                    .path(id.toString())
+                    .build()
+                    .toString();
+            response.setHeader("Location", location);
+            throw new WebApplicationException(Response.status(Response.Status.CREATED).build());
         } catch (TransactionalException ex) {
             if (ex.getCause() instanceof IllegalArgumentException) {
                 log.log(Level.WARNING, ex.getMessage(), ex);

@@ -45,6 +45,6 @@ public class Firearm implements Serializable {
     private LocalDate productionDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_name")
+    @JoinColumn(name = "user_id")
     private User user;
 }

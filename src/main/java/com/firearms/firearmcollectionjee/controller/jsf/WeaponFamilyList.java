@@ -40,8 +40,7 @@ public class WeaponFamilyList implements Serializable {
     public String delete(UUID id) {
         if (id == null) return null;
         weaponFamilyService.deleteWeaponFamily(id);
-        // stay on same page to refresh
-        return null;
+        return "/weaponfamily/weaponfamily_list.xhtml?faces-redirect=true";
     }
 
 }

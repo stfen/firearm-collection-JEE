@@ -1,9 +1,6 @@
 package com.firearms.firearmcollectionjee.controller.api;
 
-import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmResponse;
-import com.firearms.firearmcollectionjee.dto.firearm.GetFirearmsResponse;
-import com.firearms.firearmcollectionjee.dto.firearm.PatchFirearmRequest;
-import com.firearms.firearmcollectionjee.dto.firearm.PutFirearmRequest;
+import com.firearms.firearmcollectionjee.dto.firearm.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -28,9 +25,13 @@ public interface FirearmControllerInterface {
     @Produces(MediaType.APPLICATION_JSON)
     GetFirearmResponse getFirearm(@PathParam("id") UUID id);
     @PUT
-    @Path("/firearms/{id}")
+    @Path("/weaponfamilies/firearms/{id}")
     @Consumes({MediaType.APPLICATION_JSON})
     void putFirearm(@PathParam("id") UUID id, PutFirearmRequest firearm);
+    @PUT
+    @Path("/weaponfamilies/{weaponFamilyId}/firearms/{id}")
+    @Consumes({MediaType.APPLICATION_JSON})
+    void putFirearmWithWeaponFamilyId(@PathParam("id") UUID id, @PathParam("weaponFamilyId") UUID weaponFamilyId, PutFirearmWithNoWeaponFamilyRequest firearm);
     @PATCH
     @Path("/firearms/{id}")
     @Consumes(MediaType.APPLICATION_JSON)

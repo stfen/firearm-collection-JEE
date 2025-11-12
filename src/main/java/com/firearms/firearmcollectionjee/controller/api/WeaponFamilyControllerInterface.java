@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.controller.api;
 
 import com.firearms.firearmcollectionjee.dto.weaponfamily.GetWeaponFamiliesResponse;
 import com.firearms.firearmcollectionjee.dto.weaponfamily.GetWeaponFamilyResponse;
+import com.firearms.firearmcollectionjee.dto.weaponfamily.PutWeaponFamilyRequest;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
@@ -13,6 +14,10 @@ public interface WeaponFamilyControllerInterface {
     @Path("/weaponfamilies")
     @Produces(MediaType.APPLICATION_JSON)
     GetWeaponFamiliesResponse getWeaponFamilies();
+    @PUT
+    @Path("/weaponfamilies/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void putWeaponFamily(@PathParam("id") UUID id, PutWeaponFamilyRequest request);
     @GET
     @Path("/weaponfamilies/{id}")
     @Produces(MediaType.APPLICATION_JSON)

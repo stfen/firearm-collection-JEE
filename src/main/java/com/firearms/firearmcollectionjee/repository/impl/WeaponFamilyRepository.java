@@ -34,7 +34,14 @@ public class WeaponFamilyRepository implements WeaponFamilyRepositoryInterface {
 
     @Override
     public void delete(WeaponFamily weaponFamily) {
-        em.remove(em.find(WeaponFamily.class, weaponFamily.getId()));
+        WeaponFamily managed = em.find(WeaponFamily.class, weaponFamily.getId());
+        if (managed != null) {
+            // Force load the firearms collection so cascade delete works
+            if (managed.getFirearms() != null) {
+                managed.getFirearms().size();
+            }
+            em.remove(managed);
+        }
     }
 
     @Override
