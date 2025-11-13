@@ -3,6 +3,9 @@ package com.firearms.firearmcollectionjee.controller.impl;
 import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
 import com.firearms.firearmcollectionjee.controller.api.FirearmControllerInterface;
 import com.firearms.firearmcollectionjee.dto.firearm.*;
+import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.EJB;
 import jakarta.transaction.TransactionalException;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
@@ -14,6 +17,7 @@ import jakarta.ws.rs.core.UriInfo;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.security.enterprise.SecurityContext;
 import lombok.extern.java.Log;
 
 import java.util.UUID;
@@ -22,12 +26,14 @@ import java.util.logging.Level;
 
 @Path("")
 @Log
+@RolesAllowed(UserRoles.USER)
 public class FirearmController implements FirearmControllerInterface {
 
-    private final FirearmService firearmService;
+    private FirearmService firearmService;
     private final DtoFunctionFactory factory;
     private final UriInfo uriInfo;
     private HttpServletResponse response;
+    private SecurityContext securityContext;
 
     @Context
     public void setResponse(HttpServletResponse response) {
@@ -36,17 +42,26 @@ public class FirearmController implements FirearmControllerInterface {
 
     @Inject
     public FirearmController(
-            FirearmService firearmService,
             DtoFunctionFactory factory,
             @SuppressWarnings("CdiInjectionPointsInspection") UriInfo uriInfo) {
-        this.firearmService = firearmService;
         this.factory = factory;
         this.uriInfo = uriInfo;
     }
 
+    @Inject
+    public void setSecurityContext(@SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext) {
+        this.securityContext = securityContext;
+    }
+
+    @EJB
+    public void setService(FirearmService service) {
+        this.firearmService = service;
+    }
+
+
     @Override
     public GetFirearmsResponse getFirearms() {
-        return factory.firearmsToResponseFunction().apply(firearmService.findAll());
+        return factory.firearmsToResponseFunction().apply(firearmService.findAllForCallerPrincipal());
     }
 
     @Override
@@ -73,7 +88,12 @@ public class FirearmController implements FirearmControllerInterface {
     @Override
     public void putFirearm(UUID id, PutFirearmRequest request) {
         try {
-            firearmService.createFirearm(factory.requestToFirearmFunction().apply(id, request));
+            FirearmService svc = this.firearmService;
+            if (securityContext.isCallerInRole(com.firearms.firearmcollectionjee.entity.enums.UserRoles.ADMIN)) {
+                svc.createFirearm(factory.requestToFirearmFunction().apply(id, request));
+            } else {
+                svc.createForCallerPrincipal(factory.requestToFirearmFunction().apply(id, request));
+            }
             String location = uriInfo.getBaseUriBuilder()
                 .path("api")
                 .path("firearms")
@@ -94,9 +114,16 @@ public class FirearmController implements FirearmControllerInterface {
     @Override
     public void putFirearmWithWeaponFamilyId(UUID id, UUID weaponFamilyId, PutFirearmWithNoWeaponFamilyRequest request) {
         try {
-            firearmService.createFirearm(
-                    factory.requestToFirearmWithNoWeaponFamilyFunction().apply(id, weaponFamilyId, request)
-            );
+        FirearmService svc = this.firearmService;
+        if (securityContext.isCallerInRole(com.firearms.firearmcollectionjee.entity.enums.UserRoles.ADMIN)) {
+        svc.createFirearm(
+            factory.requestToFirearmWithNoWeaponFamilyFunction().apply(id, weaponFamilyId, request)
+        );
+        } else {
+        svc.createForCallerPrincipal(
+            factory.requestToFirearmWithNoWeaponFamilyFunction().apply(id, weaponFamilyId, request)
+        );
+        }
             String location = uriInfo.getBaseUriBuilder()
                     .path("api")
                     .path("firearms")

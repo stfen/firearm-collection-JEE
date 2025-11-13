@@ -2,18 +2,22 @@ package com.firearms.firearmcollectionjee.service;
 
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import jakarta.transaction.Transactional;
+import jakarta.annotation.security.RolesAllowed;
+import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@ApplicationScoped
 @NoArgsConstructor(force = true)
+@LocalBean
+@Stateless
 public class WeaponFamilyService {
     private final WeaponFamilyRepositoryInterface weaponFamilyRepository;
     private final FirearmService firearmService;
@@ -24,7 +28,7 @@ public class WeaponFamilyService {
         this.firearmService = firearmService;
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void createWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
             throw new IllegalArgumentException("WeaponFamily cannot be null");
@@ -32,7 +36,7 @@ public class WeaponFamilyService {
         weaponFamilyRepository.create(weaponFamily);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void updateWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
             throw new IllegalArgumentException("WeaponFamily cannot be null");
@@ -47,11 +51,12 @@ public class WeaponFamilyService {
         return weaponFamilyRepository.findById(id);
     }
 
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void deleteWeaponFamily(UUID id) {
         weaponFamilyRepository.delete(weaponFamilyRepository.findById(id).orElseThrow());
     }
 
+    @RolesAllowed(UserRoles.USER)
     public List<WeaponFamily> getAllWeaponFamilies() {
         return weaponFamilyRepository.findAll();
     }

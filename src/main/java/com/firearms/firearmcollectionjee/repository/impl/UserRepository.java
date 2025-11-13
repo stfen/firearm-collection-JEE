@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.repository.impl;
 
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,8 +16,7 @@ import java.util.UUID;
  * Implementation of UserRepositoryInterface.
  * Handles all CRUD operations for users using the in-memory data storage.
  */
-@RequestScoped
-@NoArgsConstructor(force = true)
+@Dependent
 public class UserRepository implements UserRepositoryInterface {
     
     private EntityManager em;

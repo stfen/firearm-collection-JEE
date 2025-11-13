@@ -2,6 +2,7 @@ package com.firearms.firearmcollectionjee.repository.impl;
 
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -11,8 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@RequestScoped
-@NoArgsConstructor(force = true)
+@Dependent
 public class WeaponFamilyRepository implements WeaponFamilyRepositoryInterface {
 
     private EntityManager em;

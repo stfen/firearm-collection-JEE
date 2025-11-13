@@ -31,6 +31,9 @@ public class User implements Serializable {
 
     private String login;
 
+    @ToString.Exclude
+    private String password;
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
 

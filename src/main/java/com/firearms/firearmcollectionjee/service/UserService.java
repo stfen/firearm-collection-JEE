@@ -1,11 +1,15 @@
 package com.firearms.firearmcollectionjee.service;
 
 import com.firearms.firearmcollectionjee.entity.User;
+import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.transaction.Transactional;
+import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import lombok.NoArgsConstructor;
 
 import java.io.IOException;
@@ -22,17 +26,23 @@ import java.util.UUID;
  * Service class for User business logic.
  * Handles business operations and validation for users.
  */
-@ApplicationScoped
+@LocalBean
+@Stateless
 @NoArgsConstructor(force = true)
 public class UserService {
     
     private final UserRepositoryInterface userRepository;
     private final String avatarBasePath;
+    private final Pbkdf2PasswordHash passwordHash;
 
     @Inject
-    public UserService(UserRepositoryInterface userRepository, @Named("avatarBasePath") String avatarBasePath) {
+    public UserService(UserRepositoryInterface userRepository,
+                       @Named("avatarBasePath") String avatarBasePath,
+                       @SuppressWarnings("CdiInjectionPointsInspection") Pbkdf2PasswordHash passwordHash
+    ) {
         this.userRepository = userRepository;
         this.avatarBasePath = avatarBasePath;
+        this.passwordHash = passwordHash;
     }
     
     /**
@@ -41,7 +51,7 @@ public class UserService {
      * @return the created user
      * @throws IllegalArgumentException if validation fails
      */
-    @Transactional
+    @PermitAll
     public void createUser(User user) {
         validateUser(user);
 
@@ -62,7 +72,7 @@ public class UserService {
      * @return the updated user
      * @throws IllegalArgumentException if validation fails or user not found
      */
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void updateUser(User user) {
         if (user.getId() == null) {
             throw new IllegalArgumentException("User ID cannot be null for update operation");
@@ -92,6 +102,7 @@ public class UserService {
      * @param id the user ID
      * @return Optional containing the user if found
      */
+    @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> findById(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("User ID cannot be null");
@@ -104,6 +115,7 @@ public class UserService {
      * @param login the user login
      * @return Optional containing the user if found
      */
+    @RolesAllowed(UserRoles.ADMIN)
     public Optional<User> findByLogin(String login) {
         if (login == null || login.trim().isEmpty()) {
             throw new IllegalArgumentException("Login cannot be null or empty");
@@ -115,6 +127,7 @@ public class UserService {
      * Get all users.
      * @return Set of all users
      */
+    @RolesAllowed(UserRoles.ADMIN)
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -124,7 +137,7 @@ public class UserService {
      * Delete user by ID.
      * @param id the user ID
      */
-    @Transactional
+    @RolesAllowed(UserRoles.ADMIN)
     public void deleteUser(UUID id) {
         if (id == null) {
             throw new IllegalArgumentException("User ID cannot be null");
@@ -137,6 +150,7 @@ public class UserService {
      * @param id the user ID
      * @return true if user exists
      */
+    @PermitAll
     public boolean userExists(UUID id) {
         if (id == null) {
             return false;

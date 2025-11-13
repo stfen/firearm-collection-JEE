@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.configuration.observer;
+package com.firearms.firearmcollectionjee.configuration.singleton;
 
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -8,41 +8,40 @@ import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.entity.enums.AmmoType;
-import com.firearms.firearmcollectionjee.service.FirearmService;
-import com.firearms.firearmcollectionjee.service.UserService;
-import com.firearms.firearmcollectionjee.service.WeaponFamilyService;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.Initialized;
-import jakarta.enterprise.context.control.RequestContextController;
-import jakarta.enterprise.event.Observes;
+import com.firearms.firearmcollectionjee.repository.impl.FirearmRepository;
+import com.firearms.firearmcollectionjee.repository.impl.UserRepository;
+import com.firearms.firearmcollectionjee.repository.impl.WeaponFamilyRepository;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
+import jakarta.ejb.TransactionAttribute;
+import jakarta.ejb.TransactionAttributeType;
 import jakarta.inject.Inject;
-import jakarta.servlet.ServletContextListener;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-@ApplicationScoped
-public class InitializedData implements ServletContextListener {
-    private final UserService userService;
-    private final WeaponFamilyService weaponFamilyService;
-    private final FirearmService firearmService;
-    private final RequestContextController requestContextController;
+@Singleton
+@Startup
+@TransactionAttribute(value = TransactionAttributeType.REQUIRED)
+@NoArgsConstructor(force = true)
+public class InitializedData {
+    private final UserRepository userRepository;
+    private final WeaponFamilyRepository weaponFamilyRepository;
+    private final FirearmRepository firearmRepository;
 
     @Inject
-    public InitializedData(UserService userService, WeaponFamilyService weaponFamilyService, 
-                          FirearmService firearmService, RequestContextController requestContextController) {
-        this.userService = userService;
-        this.weaponFamilyService = weaponFamilyService;
-        this.firearmService = firearmService;
-        this.requestContextController = requestContextController;
-    }
-
-    public void contextInitialized(@Observes @Initialized(ApplicationScoped.class) Object init) {
-        init();
+    public InitializedData(UserRepository userRepository, 
+                          WeaponFamilyRepository weaponFamilyRepository,
+                          FirearmRepository firearmRepository) {
+        this.userRepository = userRepository;
+        this.weaponFamilyRepository = weaponFamilyRepository;
+        this.firearmRepository = firearmRepository;
     }
 
     @SneakyThrows
+    @PostConstruct
     private void init() {
-        requestContextController.activate();
-        if (userService.findByLogin("admin").isEmpty()) {
+        if (userRepository.findByLogin("admin").isEmpty()) {
             User user1 = User.builder()
                     .id(UUID.fromString("178960ce-f5bf-4e54-82f3-8b10a69d7cce"))
                     .login("admin")
@@ -67,10 +66,10 @@ public class InitializedData implements ServletContextListener {
                     .email("seima@example.com")
                     .build();
 
-            userService.createUser(user1);
-            userService.createUser(user2);
-            userService.createUser(user3);
-            userService.createUser(user4);
+            userRepository.create(user1);
+            userRepository.create(user2);
+            userRepository.create(user3);
+            userRepository.create(user4);
 
             // Create WeaponFamilies
             WeaponFamily assaultRifle = WeaponFamily.builder()
@@ -101,10 +100,10 @@ public class InitializedData implements ServletContextListener {
                     .ammoType(AmmoType.BULLET)
                     .build();
 
-            weaponFamilyService.createWeaponFamily(assaultRifle);
-            weaponFamilyService.createWeaponFamily(shotgun);
-            weaponFamilyService.createWeaponFamily(sniper);
-            weaponFamilyService.createWeaponFamily(pistol);
+            weaponFamilyRepository.create(assaultRifle);
+            weaponFamilyRepository.create(shotgun);
+            weaponFamilyRepository.create(sniper);
+            weaponFamilyRepository.create(pistol);
 
             // Create Firearms
             Firearm ak47 = Firearm.builder()
@@ -167,15 +166,13 @@ public class InitializedData implements ServletContextListener {
                     .user(user2)
                     .build();
 
-            firearmService.createFirearm(ak47);
-            firearmService.createFirearm(m16);
-            firearmService.createFirearm(remington870);
-            firearmService.createFirearm(barrett50);
-            firearmService.createFirearm(glock17);
-            firearmService.createFirearm(colt1911);
+            firearmRepository.create(ak47);
+            firearmRepository.create(m16);
+            firearmRepository.create(remington870);
+            firearmRepository.create(barrett50);
+            firearmRepository.create(glock17);
+            firearmRepository.create(colt1911);
         }
-
-        requestContextController.deactivate();
     }
 
     @SneakyThrows

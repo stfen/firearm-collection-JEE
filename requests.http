@@ -3,126 +3,191 @@
 @json = application/json
 
 ################################################################################
-# USER ENDPOINTS
+## AUTHORIZATION TEST SUITE
+## Base64 credentials reference:
+## - admin-service:adminadmin = YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+## - user:useruser = dXNlcjp1c2VydXNlcg==
+## - testuser:testpass = dGVzdHVzZXI6dGVzdHBhc3M=
 ################################################################################
 
-### List all users
-GET {{base}}/users
-Accept: {{json}}
-
-### Get user by UUID
-@userId = 70b21553-3690-4464-97a3-4481ce862b28
-GET {{base}}/users/{{userId}}
-Accept: {{json}}
-
-### Get user by login
-GET {{base}}/users/login/seima
-Accept: {{json}}
-
-### Create user
-PUT {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57
+### Test 1: NO AUTH - Try to create weapon family (should fail 401/403)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123457
 Content-Type: {{json}}
 
 {
-	"login": "newuser",
-	"email": "newuser@example.com",
-	"birthDate": "1998-05-21"
+	"name": "Unauthorized Family",
+	"ammoType": "BULLET",
+	"optimalRange": 100
 }
 
-### Update user (PATCH)
-PATCH {{base}}/users/{{userId}}
+### Test 2: WRONG AUTH - Try to create weapon family with invalid credentials (should fail 401)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123458
 Content-Type: {{json}}
+Authorization: Basic aW52YWxpZDppbnZhbGlk
 
 {
-	"email": "updated@example.com"
+	"name": "Wrong Auth Family",
+	"ammoType": "BULLET",
+	"optimalRange": 100
 }
 
-### Upload avatar
-PUT {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
-Content-Type: multipart/form-data; boundary=boundary
+### Test 3: USER AUTH - Try to create weapon family as user (should fail 403 - admin only)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123459
+Content-Type: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
---boundary
-Content-Disposition: form-data; name="avatar"; filename="avatar.png"
-Content-Type: image/png
+{
+	"name": "User Family",
+	"ammoType": "BULLET",
+	"optimalRange": 100
+}
 
-< C:\Users\stefa\Pictures\Roblox\RobloxScreenShot20240923_224013968.png
---boundary--
+### Test 4: ADMIN AUTH - Create weapon family as admin (should succeed 201/204)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123460
+Content-Type: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
 
-### Get avatar
-GET {{base}}/users/c461d210-8cea-4213-a19a-3cb856351d57/avatar
-Accept: image/png
+{
+	"name": "Admin Test Family",
+	"ammoType": "BULLET",
+	"optimalRange": 100
+}
 
-################################################################################
-# WEAPON FAMILY ENDPOINTS
-################################################################################
-
-### List all weapon families
+### Test 5: USER AUTH - Get all weapon families (should succeed - users allowed)
+// @no-cookie-jar
 GET {{base}}/weaponfamilies
 Accept: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
-### Create weaponfamily
-@weaponFamilyId1 = e5f6a7b8-c9d0-1234-efab-567890123457
-PUT {{base}}/weaponfamilies/{{weaponFamilyId1}}
+### Test 6: ADMIN AUTH - Get all weapon families (should succeed)
+// @no-cookie-jar
+GET {{base}}/weaponfamilies
+Accept: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+### Test 7: ADMIN AUTH - Delete weapon family (should succeed - admin only)
+// @no-cookie-jar
+DELETE {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123460
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+### Test 8: USER AUTH - Try to delete weapon family (should fail 403 - admin only)
+// @no-cookie-jar
+DELETE {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123456
+Authorization: Basic dXNlcjp1c2VydXNlcg==
+
+################################################################################
+## USER REGISTRATION - @PermitAll (no auth required)
+################################################################################
+
+### Test 9: NO AUTH - Register new user (should succeed - PermitAll)
+// @no-cookie-jar
+PUT {{base}}/users/11111111-aaaa-bbbb-cccc-000000000001
 Content-Type: {{json}}
 
 {
-	"name": "Test WeaponFamily",
-	"ammoType": "SHELL",
-	"optimalRange": 10
+	"login": "new_api_user",
+	"email": "new_api_user@example.com",
+	"birthDate": "1995-01-01"
 }
 
-###
-DELETE {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123457
-
 ################################################################################
-# FIREARM ENDPOINTS
+## FIREARMS - Admin can see/edit all, users see only their own
 ################################################################################
 
-### List all firearms
+### Test 10: ADMIN AUTH - Get all firearms (should return all firearms)
+// @no-cookie-jar
 GET {{base}}/firearms
 Accept: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
 
-### Get specific firearm
-@firearmId = f1f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e79
-GET {{base}}/firearms/{{firearmId}}
+### Test 11: USER AUTH - Get all firearms (should return only user's firearms - DB filtered)
+// @no-cookie-jar
+GET {{base}}/firearms
 Accept: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
-### Create firearm
-@newFirearmId = f1f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e79
-@weaponFamilyId = e5f6a7b8-c9d0-1234-efab-567890123457
-PUT {{base}}/weaponfamilies/{{weaponFamilyId1}}/firearms/{{newFirearmId}}
+### Test 12: ADMIN AUTH - Create firearm with explicit userId (admin can assign owner)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123456/firearms/f1f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e79
 Content-Type: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
 
 {
-	"name": "Test Rifle",
-	"caliber": 7.62,
-	"magazineCapacity": 20,
-	"productionDate": "2020-01-15",
-	"userId": "70b21512-1234-5678-97a3-4481ce862b26"
+	"name": "Admin Created Rifle",
+	"caliber": 5.56,
+	"magazineCapacity": 30,
+	"productionDate": "2021-01-01",
+	"userId": "70b21553-3690-4464-97a3-4481ce862b28"
 }
 
-### Update firearm
-PATCH {{base}}/firearms/{{firearmId}}
+### Test 13: USER AUTH - Create firearm (owner auto-set to caller, no userId field)
+// @no-cookie-jar
+PUT {{base}}/weaponfamilies/e5f6a7b8-c9d0-1234-efab-567890123456/firearms/f2f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e80
 Content-Type: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
 {
-	"name": "Updated Test Rifle",
+	"name": "User Owned Rifle",
+	"caliber": 7.62,
+	"magazineCapacity": 20,
+	"productionDate": "2022-02-02"
+}
+
+### Test 14: ADMIN AUTH - Get specific user's firearms (admin can view any user's firearms)
+// @no-cookie-jar
+GET {{base}}/users/70b21553-3690-4464-97a3-4481ce862b28/firearms
+Accept: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+### Test 15: ADMIN AUTH - Update any firearm (should succeed)
+// @no-cookie-jar
+PATCH {{base}}/firearms/f1f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e79
+Content-Type: {{json}}
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+{
+	"name": "Admin Updated Rifle",
 	"magazineCapacity": 25
 }
 
-### Delete firearm
-DELETE {{base}}/firearms/{{newFirearmId}}
+### Test 16: USER AUTH - Update own firearm (should succeed if owner matches)
+// @no-cookie-jar
+PATCH {{base}}/firearms/f2f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e80
+Content-Type: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
-################################################################################
-# RELATIONSHIP ENDPOINTS
-################################################################################
+{
+	"name": "User Updated Own Rifle",
+	"magazineCapacity": 18
+}
 
-### Get user's firearms
-@user1Id = 70b21553-3690-4464-97a3-4481ce862b28
-GET {{base}}/users/{{user1Id}}/firearms
-Accept: {{json}}
+### Test 17: USER AUTH - Try to update someone else's firearm (should fail 403) TODO
+// @no-cookie-jar
+PATCH {{base}}/firearms/66666666-7777-8888-9999-aaaaaaaaaaaa
+Content-Type: {{json}}
+Authorization: Basic dXNlcjp1c2VydXNlcg==
 
-### Get weapon family's firearms
-@assaultRifleId = a1b2c3d4-e5f6-7890-abcd-ef1234567890
-GET {{base}}/weaponfamilies/{{assaultRifleId}}/firearms
-Accept: {{json}}
+{
+	"name": "Should Not Update",
+	"magazineCapacity": 99
+}
+
+### Test 18: ADMIN AUTH - Delete any firearm (should succeed)
+// @no-cookie-jar
+DELETE {{base}}/firearms/f1f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e79
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+### Test 19: USER AUTH - Delete own firearm (should succeed if owner matches)
+// @no-cookie-jar
+DELETE {{base}}/firearms/f2f21f1-2f2f-3f3f-4f4f-5f5f5f5f5e80
+Authorization: Basic dXNlcjp1c2VydXNlcg==
+
+### Test 20: USER AUTH - Try to delete someone else's firearm (should fail 403) TODO
+// @no-cookie-jar
+DELETE {{base}}/firearms/66666666-7777-8888-9999-aaaaaaaaaaaa
+Authorization: Basic dXNlcjp1c2VydXNlcg==
+

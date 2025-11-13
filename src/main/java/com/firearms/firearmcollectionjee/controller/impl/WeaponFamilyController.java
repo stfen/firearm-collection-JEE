@@ -6,7 +6,9 @@ import com.firearms.firearmcollectionjee.dto.weaponfamily.GetWeaponFamiliesRespo
 import com.firearms.firearmcollectionjee.dto.weaponfamily.GetWeaponFamilyResponse;
 import com.firearms.firearmcollectionjee.dto.weaponfamily.PutWeaponFamilyRequest;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
+import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
 import com.firearms.firearmcollectionjee.service.WeaponFamilyService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +49,7 @@ public class WeaponFamilyController implements WeaponFamilyControllerInterface {
     }
 
     @Override
+    @RolesAllowed(UserRoles.USER)
     public GetWeaponFamiliesResponse getWeaponFamilies() {
         List<WeaponFamily> weaponFamilies = weaponFamilyService.getAllWeaponFamilies();
         return factory.weaponFamiliesToResponseFunction().apply(weaponFamilies);
@@ -60,6 +63,7 @@ public class WeaponFamilyController implements WeaponFamilyControllerInterface {
     }
 
     @Override
+    @RolesAllowed(UserRoles.ADMIN)
     public void putWeaponFamily(UUID id, PutWeaponFamilyRequest request) {
         try {
             weaponFamilyService.createWeaponFamily(
@@ -83,6 +87,7 @@ public class WeaponFamilyController implements WeaponFamilyControllerInterface {
     }
 
     @Override
+    @jakarta.annotation.security.RolesAllowed(com.firearms.firearmcollectionjee.entity.enums.UserRoles.ADMIN)
     public void deleteWeaponFamily(UUID id) {
         weaponFamilyService.findById(id).ifPresentOrElse(
                 entity -> weaponFamilyService.deleteWeaponFamily(id),

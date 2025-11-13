@@ -4,9 +4,11 @@ import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.repository.api.FirearmRepositoryInterface;
+import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import lombok.NoArgsConstructor;
 
@@ -15,8 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequestScoped
-@NoArgsConstructor(force = true)
+@Dependent
 public class FirearmRepository implements FirearmRepositoryInterface {
 
     private EntityManager em;
@@ -45,6 +46,18 @@ public class FirearmRepository implements FirearmRepositoryInterface {
     @Override
     public Optional<Firearm> findById(UUID id) {
         return Optional.ofNullable(em.find(Firearm.class, id));
+    }
+
+    @Override
+    public Optional<Firearm> findByIdAndUser(UUID id, User user) {
+        try {
+            return Optional.of(em.createQuery("select c from Firearm c where c.id = :id and c.user = :user", Firearm.class)
+                    .setParameter("user", user)
+                    .setParameter("id", id)
+                    .getSingleResult());
+        } catch (NoResultException ex) {
+            return Optional.empty();
+        }
     }
 
     @Override

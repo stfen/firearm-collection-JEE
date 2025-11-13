@@ -16,4 +16,5 @@ public interface FirearmRepositoryInterface {
     Optional<Firearm> findById(UUID id);
     List<Firearm> findAllByUser(User user);
     List<Firearm> findAllByWeaponFamily(WeaponFamily weaponFamily);
+    Optional<Firearm> findByIdAndUser(UUID id, User user);
 }
