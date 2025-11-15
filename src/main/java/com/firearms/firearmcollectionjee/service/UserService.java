@@ -62,7 +62,19 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("User with email '" + user.getEmail() + "' already exists");
         }
-        
+
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            String p = user.getPassword();
+            if (!p.startsWith("$pbkdf2$") && !p.startsWith("{PBKDF2}")) {
+                String hashed = passwordHash.generate(p.toCharArray());
+                user.setPassword(hashed);
+            }
+        }
+
+        if (user.getRoles().isEmpty()) {
+            user.setRoles(java.util.List.of(UserRoles.USER));
+        }
+
         userRepository.create(user);
     }
     

@@ -12,4 +12,5 @@ import lombok.*;
 public class PutUserRequest {
     private String login;
     private String email;
+    private String password;
 }

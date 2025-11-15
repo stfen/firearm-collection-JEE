@@ -7,6 +7,7 @@
 ## Base64 credentials reference:
 ## - admin-service:adminadmin = YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
 ## - user:useruser = dXNlcjp1c2VydXNlcg==
+## - usertest:userusertest = dXNlcnRlc3Q6dXNlcnVzZXJ0ZXN0
 ## - testuser:testpass = dGVzdHVzZXI6dGVzdHBhc3M=
 ################################################################################
 
@@ -93,6 +94,29 @@ Content-Type: {{json}}
 	"email": "new_api_user@example.com",
 	"birthDate": "1995-01-01"
 }
+
+### Test 9b: Create test user with password and role USER (admin not required)
+// @no-cookie-jar
+PUT {{base}}/users/22222222-2222-2222-2222-222222222223
+Content-Type: {{json}}
+
+{
+	"login": "usertest",
+	"email": "usertest@example.com",
+	"birthDate": "1995-05-15",
+	"password": "userusertest",
+	"roles": ["user"]
+}
+
+###
+DELETE {{base}}/users/22222222-2222-2222-2222-222222222223
+Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
+
+### Test 9c: Verify test user can access user-level endpoint (GET weapon families)
+// @no-cookie-jar
+GET {{base}}/weaponfamilies
+Accept: {{json}}
+Authorization: Basic dXNlcnRlc3Q6dXNlcnVzZXJ0ZXN0
 
 ################################################################################
 ## FIREARMS - Admin can see/edit all, users see only their own
