@@ -84,17 +84,6 @@ Authorization: Basic dXNlcjp1c2VydXNlcg==
 ## USER REGISTRATION - @PermitAll (no auth required)
 ################################################################################
 
-### Test 9: NO AUTH - Register new user (should succeed - PermitAll)
-// @no-cookie-jar
-PUT {{base}}/users/11111111-aaaa-bbbb-cccc-000000000001
-Content-Type: {{json}}
-
-{
-	"login": "new_api_user",
-	"email": "new_api_user@example.com",
-	"birthDate": "1995-01-01"
-}
-
 ### Test 9b: Create test user with password and role USER (admin not required)
 // @no-cookie-jar
 PUT {{base}}/users/22222222-2222-2222-2222-222222222223
@@ -145,7 +134,7 @@ Authorization: Basic YWRtaW4tc2VydmljZTphZG1pbmFkbWlu
 	"caliber": 5.56,
 	"magazineCapacity": 30,
 	"productionDate": "2021-01-01",
-	"userId": "70b21553-3690-4464-97a3-4481ce862b28"
+	"userId": "22222222-2222-2222-2222-222222222223"
 }
 
 ### Test 13: USER AUTH - Create firearm (owner auto-set to caller, no userId field)
@@ -189,7 +178,7 @@ Authorization: Basic dXNlcjp1c2VydXNlcg==
 	"magazineCapacity": 18
 }
 
-### Test 17: USER AUTH - Try to update someone else's firearm (should fail 403) TODO
+### Test 17: USER AUTH - Try to update someone else's firearm (should fail 403)
 // @no-cookie-jar
 PATCH {{base}}/firearms/66666666-7777-8888-9999-aaaaaaaaaaaa
 Content-Type: {{json}}

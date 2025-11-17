@@ -71,22 +71,7 @@ public class InitializeAdminService {
 
             userRepository.create(admin);
         }
-
-        // Create test regular user for authorization tests
-        if (userRepository.findByLogin("user").isEmpty()) {
-            User regularUser = User.builder()
-                    .id(UUID.fromString("22222222-2222-2222-2222-222222222222"))
-                    .login("user")
-                    .birthDate(LocalDate.of(1995, 5, 15))
-                    .email("user@firearmcollection.example.com")
-                    .password(passwordHash.generate("useruser".toCharArray()))
-                    .roles(List.of(UserRoles.USER))
-                    .build();
-
-            userRepository.create(regularUser);
-        }
     }
-
 }
 
 

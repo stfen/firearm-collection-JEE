@@ -2,41 +2,51 @@ package com.firearms.firearmcollectionjee.configuration.singleton;
 
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.entity.enums.AmmoType;
+import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
 import com.firearms.firearmcollectionjee.repository.impl.FirearmRepository;
 import com.firearms.firearmcollectionjee.repository.impl.UserRepository;
 import com.firearms.firearmcollectionjee.repository.impl.WeaponFamilyRepository;
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
-import jakarta.ejb.TransactionAttribute;
-import jakarta.ejb.TransactionAttributeType;
+import jakarta.annotation.security.DeclareRoles;
+import jakarta.annotation.security.RunAs;
+import jakarta.ejb.*;
 import jakarta.inject.Inject;
+import jakarta.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 @Singleton
 @Startup
 @TransactionAttribute(value = TransactionAttributeType.REQUIRED)
 @NoArgsConstructor(force = true)
+@DependsOn("InitializeAdminService")
+@DeclareRoles({UserRoles.ADMIN, UserRoles.USER})
+@RunAs(UserRoles.ADMIN)
+@Log
 public class InitializedData {
-    private final UserRepository userRepository;
-    private final WeaponFamilyRepository weaponFamilyRepository;
-    private final FirearmRepository firearmRepository;
+        private final UserRepository userRepository;
+        private final WeaponFamilyRepository weaponFamilyRepository;
+        private final FirearmRepository firearmRepository;
+        private final Pbkdf2PasswordHash passwordHash;
 
-    @Inject
-    public InitializedData(UserRepository userRepository, 
-                          WeaponFamilyRepository weaponFamilyRepository,
-                          FirearmRepository firearmRepository) {
-        this.userRepository = userRepository;
-        this.weaponFamilyRepository = weaponFamilyRepository;
-        this.firearmRepository = firearmRepository;
-    }
+        @Inject
+        public InitializedData(UserRepository userRepository, 
+                                                  WeaponFamilyRepository weaponFamilyRepository,
+                                                  FirearmRepository firearmRepository,
+                                                  @SuppressWarnings("CdiInjectionPointsInspection") Pbkdf2PasswordHash passwordHash) {
+                this.userRepository = userRepository;
+                this.weaponFamilyRepository = weaponFamilyRepository;
+                this.firearmRepository = firearmRepository;
+                this.passwordHash = passwordHash;
+        }
 
     @SneakyThrows
     @PostConstruct
@@ -46,30 +56,48 @@ public class InitializedData {
                     .id(UUID.fromString("178960ce-f5bf-4e54-82f3-8b10a69d7cce"))
                     .login("admin")
                     .email("ziomus@example.com")
+                    .password(passwordHash.generate("useruser".toCharArray()))
+                    .roles(List.of(UserRoles.USER))
+                    .build();
+
+            User regularUser = User.builder()
+                    .id(UUID.fromString("22222222-2222-2222-2222-222222222222"))
+                    .login("user")
+                    .birthDate(LocalDate.of(1995, 5, 15))
+                    .email("user@firearmcollection.example.com")
+                    .password(passwordHash.generate("useruser".toCharArray()))
+                    .roles(List.of(UserRoles.USER))
                     .build();
 
             User user2 = User.builder()
                     .id(UUID.fromString("c461d210-8cea-4213-a19a-3cb856351d56"))
                     .login("uzytnik2")
                     .email("uzytnik2@example.com")
+                    .password(passwordHash.generate("useruser".toCharArray()))
+                    .roles(List.of(UserRoles.USER))
                     .build();
 
             User user3 = User.builder()
                     .id(UUID.fromString("70b21553-3690-4464-97a3-4481ce862b28"))
                     .login("gracz2")
                     .email("gracz2@example.com")
+                    .password(passwordHash.generate("useruser".toCharArray()))
+                    .roles(List.of(UserRoles.USER))
                     .build();
 
             User user4 = User.builder()
                     .id(UUID.fromString("70b21512-1234-5678-97a3-4481ce862b26"))
                     .login("seima")
                     .email("seima@example.com")
+                    .password(passwordHash.generate("useruser".toCharArray()))
+                    .roles(List.of(UserRoles.USER))
                     .build();
 
             userRepository.create(user1);
             userRepository.create(user2);
             userRepository.create(user3);
             userRepository.create(user4);
+            userRepository.create(regularUser);
 
             // Create WeaponFamilies
             WeaponFamily assaultRifle = WeaponFamily.builder()
