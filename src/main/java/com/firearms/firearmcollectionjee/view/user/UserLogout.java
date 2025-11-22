@@ -31,10 +31,10 @@ public class UserLogout {
      */
     @SneakyThrows
     public String logoutAction() {
-        request.logout();//Session invalidate can possibly not work with JASPIC.
+        request.logout();
         String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
         return viewId + "?faces-redirect=true&includeViewParams=true";
+
     }
 
 }
-
