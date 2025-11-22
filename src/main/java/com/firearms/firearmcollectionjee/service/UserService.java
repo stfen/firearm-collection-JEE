@@ -30,23 +30,23 @@ import java.util.UUID;
 @Stateless
 @NoArgsConstructor(force = true)
 public class UserService {
-    
+
     private final UserRepositoryInterface userRepository;
     private final String avatarBasePath;
     private final Pbkdf2PasswordHash passwordHash;
 
     @Inject
     public UserService(UserRepositoryInterface userRepository,
-                       @Named("avatarBasePath") String avatarBasePath,
-                       @SuppressWarnings("CdiInjectionPointsInspection") Pbkdf2PasswordHash passwordHash
-    ) {
+            @Named("avatarBasePath") String avatarBasePath,
+            @SuppressWarnings("CdiInjectionPointsInspection") Pbkdf2PasswordHash passwordHash) {
         this.userRepository = userRepository;
         this.avatarBasePath = avatarBasePath;
         this.passwordHash = passwordHash;
     }
-    
+
     /**
      * Create a new user with validation.
+     * 
      * @param user the user to create
      * @return the created user
      * @throws IllegalArgumentException if validation fails
@@ -77,9 +77,10 @@ public class UserService {
 
         userRepository.create(user);
     }
-    
+
     /**
      * Update an existing user.
+     * 
      * @param user the user to update
      * @return the updated user
      * @throws IllegalArgumentException if validation fails or user not found
@@ -89,11 +90,11 @@ public class UserService {
         if (user.getId() == null) {
             throw new IllegalArgumentException("User ID cannot be null for update operation");
         }
-        
+
         if (!userRepository.existsById(user.getId())) {
             throw new IllegalArgumentException("User with ID '" + user.getId() + "' not found");
         }
-        
+
         validateUser(user);
 
         Optional<User> existingUserWithLogin = userRepository.findByLogin(user.getLogin());
@@ -105,12 +106,13 @@ public class UserService {
         if (existingUserWithEmail.isPresent() && !existingUserWithEmail.get().getId().equals(user.getId())) {
             throw new IllegalArgumentException("Email '" + user.getEmail() + "' is already taken by another user");
         }
-        
+
         userRepository.update(user);
     }
-    
+
     /**
      * Find user by ID.
+     * 
      * @param id the user ID
      * @return Optional containing the user if found
      */
@@ -121,9 +123,10 @@ public class UserService {
         }
         return userRepository.findById(id);
     }
-    
+
     /**
      * Find user by login.
+     * 
      * @param login the user login
      * @return Optional containing the user if found
      */
@@ -134,9 +137,10 @@ public class UserService {
         }
         return userRepository.findByLogin(login.trim());
     }
-    
+
     /**
      * Get all users.
+     * 
      * @return Set of all users
      */
     @RolesAllowed(UserRoles.ADMIN)
@@ -144,9 +148,9 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    
     /**
      * Delete user by ID.
+     * 
      * @param id the user ID
      */
     @RolesAllowed(UserRoles.ADMIN)
@@ -156,9 +160,10 @@ public class UserService {
         }
         userRepository.findById(id).ifPresent(userRepository::delete);
     }
-    
+
     /**
      * Check if user exists by ID.
+     * 
      * @param id the user ID
      * @return true if user exists
      */
@@ -169,11 +174,11 @@ public class UserService {
         }
         return userRepository.existsById(id);
     }
-    
 
     /**
      * Store or replace a user's avatar image.
-     * @param id user id
+     * 
+     * @param id     user id
      * @param avatar input stream with image bytes (PNG expected currently)
      */
     public void updateAvatar(UUID id, InputStream avatar) {
@@ -249,9 +254,10 @@ public class UserService {
             userRepository.update(user);
         });
     }
-    
+
     /**
      * Validate user data.
+     * 
      * @param user the user to validate
      * @throws IllegalArgumentException if validation fails
      */
@@ -259,30 +265,31 @@ public class UserService {
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
-        
+
         if (user.getLogin() == null || user.getLogin().trim().isEmpty()) {
             throw new IllegalArgumentException("User login cannot be null or empty");
         }
-        
+
         if (user.getLogin().trim().length() < 3) {
             throw new IllegalArgumentException("User login must be at least 3 characters long");
         }
-        
+
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             throw new IllegalArgumentException("User email cannot be null or empty");
         }
-        
+
         if (!isValidEmail(user.getEmail())) {
             throw new IllegalArgumentException("Invalid email format");
         }
-        
+
         if (user.getBirthDate() != null && user.getBirthDate().isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Birth date cannot be in the future");
         }
     }
-    
+
     /**
      * Simple email validation.
+     * 
      * @param email the email to validate
      * @return true if email format is valid
      */
@@ -290,7 +297,7 @@ public class UserService {
         if (email == null || email.trim().isEmpty()) {
             return false;
         }
-        
+
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(emailRegex);
     }

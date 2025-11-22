@@ -1,10 +1,9 @@
-package com.firearms.firearmcollectionjee.controller.jsf;
+package com.firearms.firearmcollectionjee.view.firearm;
 
 import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.model.firearm.FirearmModel;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import com.firearms.firearmcollectionjee.component.ModelFunctionFactory;
-import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -32,7 +31,6 @@ public class FirearmView implements Serializable {
     @Getter
     private FirearmModel firearm;
 
-
     @Inject
     public FirearmView(FirearmService firearmService, ModelFunctionFactory modelFactory) {
         this.firearmService = firearmService;
@@ -41,10 +39,11 @@ public class FirearmView implements Serializable {
 
     public void init() throws IOException {
         Optional<Firearm> firearm = firearmService.findById(id);
-        if(firearm.isPresent()) {
+        if (firearm.isPresent()) {
             this.firearm = modelFactory.firearmToModel().apply(firearm.get());
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND, "Firearm not found");
+            FacesContext.getCurrentInstance().getExternalContext().responseSendError(HttpServletResponse.SC_NOT_FOUND,
+                    "Firearm not found");
         }
     }
 

@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.controller.jsf;
+package com.firearms.firearmcollectionjee.view.firearm;
 
 import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;

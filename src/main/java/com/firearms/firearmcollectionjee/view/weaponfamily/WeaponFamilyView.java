@@ -1,4 +1,4 @@
-package com.firearms.firearmcollectionjee.controller.jsf;
+package com.firearms.firearmcollectionjee.view.weaponfamily;
 
 import com.firearms.firearmcollectionjee.model.firearm.FirearmModel;
 import com.firearms.firearmcollectionjee.model.weaponfamily.WeaponFamilyModel;
@@ -34,8 +34,8 @@ public class WeaponFamilyView implements Serializable {
 
     @Inject
     public WeaponFamilyView(WeaponFamilyService weaponFamilyService,
-                            FirearmService firearmService,
-                            ModelFunctionFactory modelFactory) {
+            FirearmService firearmService,
+            ModelFunctionFactory modelFactory) {
         this.weaponFamilyService = weaponFamilyService;
         this.firearmService = firearmService;
         this.modelFactory = modelFactory;
@@ -110,7 +110,8 @@ public class WeaponFamilyView implements Serializable {
     }
 
     public String deleteFirearm(String id) {
-        if (id == null) return null;
+        if (id == null)
+            return null;
         try {
             UUID uuid = UUID.fromString(id);
             firearmService.deleteFirearm(uuid);

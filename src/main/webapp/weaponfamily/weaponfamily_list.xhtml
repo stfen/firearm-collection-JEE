@@ -1,46 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
 
         <article class="card-like">
-            <header class="article-header"><h2 class="article-title">Lista kategorii (Weapon Families)</h2></header>
+            <header class="article-header">
+                <h2 class="article-title">Lista kategorii (Weapon Families)</h2>
+            </header>
 
-            <h:dataTable value="#{weaponFamilyList.weaponFamilies.weaponFamilies}" var="wf"
-                         styleClass="table-clean" headerClass="bg-light">
+            <h:dataTable value="#{weaponFamilyList.weaponFamilies.weaponFamilies}" var="wf" styleClass="table-clean"
+                headerClass="bg-light">
                 <h:column>
                     <f:facet name="header">Nazwa</f:facet>
-                    <h:outputText value="#{wf.name}"/>
+                    <h:outputText value="#{wf.name}" />
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Optymalny zasięg</f:facet>
-                    <h:outputText value="#{wf.optimalRange}"/>
+                    <h:outputText value="#{wf.optimalRange}" />
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Ammo</f:facet>
-                    <h:outputText value="#{wf.ammoType}"/>
+                    <h:outputText value="#{wf.ammoType}" />
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Pokaż</f:facet>
                     <h:link outcome="/weaponfamily/weaponfamily_view.xhtml" value="Pokaż">
-                        <f:param name="id" value="#{wf.id}"/>
+                        <f:param name="id" value="#{wf.id}" />
                     </h:link>
                 </h:column>
 
                 <h:column>
                     <f:facet name="header">Usuń</f:facet>
                     <h:form>
-                        <h:commandButton styleClass="btn" value="Usuń"
-                                         action="#{weaponFamilyList.delete(wf.id)}"
-                                         onclick="if(!confirm('Usuń kategorię wraz z elementami?')) return false;"/>
+                        <h:commandButton styleClass="btn" value="Usuń" action="#{weaponFamilyList.delete(wf.id)}"
+                            onclick="if(!confirm('Usuń kategorię wraz z elementami?')) return false;" />
                     </h:form>
                 </h:column>
             </h:dataTable>

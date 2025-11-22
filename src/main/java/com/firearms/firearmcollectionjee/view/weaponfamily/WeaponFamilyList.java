@@ -1,7 +1,6 @@
-package com.firearms.firearmcollectionjee.controller.jsf;
+package com.firearms.firearmcollectionjee.view.weaponfamily;
 
 import com.firearms.firearmcollectionjee.model.weaponfamily.WeaponFamiliesModel;
-import com.firearms.firearmcollectionjee.model.weaponfamily.WeaponFamilyModel;
 import com.firearms.firearmcollectionjee.service.WeaponFamilyService;
 import com.firearms.firearmcollectionjee.component.ModelFunctionFactory;
 import jakarta.faces.view.ViewScoped;
@@ -9,7 +8,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.UUID;
 
 /**
