@@ -27,6 +27,15 @@
                             <h:link styleClass="nav-link" outcome="/weaponfamily/weaponfamily_list.xhtml">Categories
                             </h:link>
                         </li>
+                        <li class="nav-item">
+                            <span class="nav-link disabled">Logged in as: #{request.userPrincipal.name}</span>
+                        </li>
+                        <li class="nav-item">
+                            <h:form>
+                                <h:commandButton styleClass="btn btn-sm btn-outline-danger" value="Logout"
+                                    action="#{userLogout.logoutAction()}" />
+                            </h:form>
+                        </li>
                     </ul>
                 </div>
             </nav>

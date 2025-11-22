@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
         <f:viewParam name="id" value="#{weaponFamilyView.idParam}" />
@@ -13,7 +10,9 @@
 
     <ui:define name="content">
         <section class="card-like">
-            <header class="article-header"><h2 class="article-title">Informacje o kategorii</h2></header>
+            <header class="article-header">
+                <h2 class="article-title">Informacje o kategorii</h2>
+            </header>
 
             <h:panelGrid columns="2" rendered="#{not empty weaponFamilyView.weaponFamily}" styleClass="form-row">
                 <h:outputLabel value="Nazwa:" />
@@ -44,19 +43,21 @@
                 </h:column>
                 <h:column>
                     <f:facet name="header">Akcje</f:facet>
-                        <h:form>
-                            <h:link outcome="/firearm/firearm_edit.xhtml" value="Edytuj" styleClass="btn small ghost">
-                                <f:param name="id" value="#{f.id}" />
-                            </h:link>
-                                &#160;|&#160;
-                                <h:commandButton value="Usuń" styleClass="btn small" action="#{weaponFamilyView.deleteFirearm(f.id)}" onclick="if(!confirm('Usuń ten element?')) return false;" />
-                        </h:form>
+                    <h:form>
+                        <h:link outcome="/firearm/firearm_edit.xhtml" value="Edytuj" styleClass="btn small ghost">
+                            <f:param name="id" value="#{f.id}" />
+                        </h:link>
+                        &#160;|&#160;
+                        <h:commandButton value="Usuń" styleClass="btn small"
+                            action="#{weaponFamilyView.deleteFirearm(f.id)}"
+                            onclick="if(!confirm('Usuń ten element?')) return false;" />
+                    </h:form>
                 </h:column>
             </h:dataTable>
 
-                <h:link outcome="/firearm/firearm_create.xhtml" value="Dodaj nowy element" styleClass="btn">
-                    <f:param name="weaponFamilyId" value="#{weaponFamilyView.weaponFamily.id}" />
-                </h:link>
+            <h:link outcome="/firearm/firearm_create.xhtml" value="Dodaj nowy element" styleClass="btn">
+                <f:param name="weaponFamilyId" value="#{weaponFamilyView.weaponFamily.id}" />
+            </h:link>
 
             <h:panelGroup rendered="#{empty weaponFamilyView.weaponFamily}">
                 <p class="text-danger">Nie znaleziono kategorii o podanym id.</p>

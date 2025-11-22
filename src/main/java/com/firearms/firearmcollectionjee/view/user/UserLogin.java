@@ -1,6 +1,5 @@
 package com.firearms.firearmcollectionjee.view.user;
 
-
 import com.firearms.firearmcollectionjee.view.producer.qualifier.FacesElement;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.context.FacesContext;
@@ -56,8 +55,7 @@ public class UserLogin {
             HttpServletRequest request,
             @FacesElement HttpServletResponse response,
             @SuppressWarnings("CdiInjectionPointsInspection") SecurityContext securityContext,
-            FacesContext facesContext
-    ) {
+            FacesContext facesContext) {
         this.request = request;
         this.response = response;
         this.securityContext = securityContext;
@@ -84,9 +82,9 @@ public class UserLogin {
     @SneakyThrows
     public void loginAction() {
         Credential credential = new UsernamePasswordCredential(login, new Password(password));
-        AuthenticationStatus status = securityContext.authenticate(request, response, withParams().credential(credential));
+        AuthenticationStatus status = securityContext.authenticate(request, response,
+                withParams().credential(credential));
         facesContext.responseComplete();
     }
 
 }
-

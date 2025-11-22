@@ -57,7 +57,7 @@ public class InitializedData {
                     .login("admin")
                     .email("ziomus@example.com")
                     .password(passwordHash.generate("useruser".toCharArray()))
-                    .roles(List.of(UserRoles.USER))
+                    .roles(List.of(UserRoles.ADMIN))
                     .build();
 
             User regularUser = User.builder()

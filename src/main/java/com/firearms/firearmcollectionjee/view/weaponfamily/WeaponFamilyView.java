@@ -9,6 +9,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
@@ -32,13 +33,17 @@ public class WeaponFamilyView implements Serializable {
     private WeaponFamilyModel weaponFamily;
     private List<FirearmModel> firearms = Collections.emptyList();
 
+    private final HttpServletRequest request;
+
     @Inject
     public WeaponFamilyView(WeaponFamilyService weaponFamilyService,
             FirearmService firearmService,
-            ModelFunctionFactory modelFactory) {
+            ModelFunctionFactory modelFactory,
+            HttpServletRequest request) {
         this.weaponFamilyService = weaponFamilyService;
         this.firearmService = firearmService;
         this.modelFactory = modelFactory;
+        this.request = request;
     }
 
     public void setId(UUID id) {
@@ -97,6 +102,8 @@ public class WeaponFamilyView implements Serializable {
                     this.firearms = firearmService.findAllByWeaponFamily(id)
                             .orElse(Collections.emptyList())
                             .stream()
+                            .filter(firearm -> request.isUserInRole("admin") || (firearm.getUser() != null
+                                    && firearm.getUser().getLogin().equals(request.getUserPrincipal().getName())))
                             .map(fFn)
                             .toList();
                 }, () -> {

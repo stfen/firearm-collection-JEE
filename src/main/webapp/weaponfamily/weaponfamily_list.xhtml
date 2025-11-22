@@ -34,7 +34,7 @@
                     </h:link>
                 </h:column>
 
-                <h:column>
+                <h:column rendered="#{request.isUserInRole('admin')}">
                     <f:facet name="header">Usuń</f:facet>
                     <h:form>
                         <h:commandButton styleClass="btn" value="Usuń" action="#{weaponFamilyList.delete(wf.id)}"
