@@ -26,35 +26,39 @@
             </h:panelGrid>
 
             <h3>#{messages['family.firearms']}</h3>
-            <h:dataTable value="#{weaponFamilyView.firearms}" var="f" styleClass="table-clean">
-                <h:column>
-                    <f:facet name="header">#{messages['firearm.name']}</f:facet>
-                    <h:link value="#{f.name}" outcome="/firearm/firearm_view.xhtml">
-                        <f:param name="id" value="#{f.id}" />
-                    </h:link>
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{messages['firearm.caliber']}</f:facet>
-                    #{f.caliber}
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{messages['firearm.capacity']}</f:facet>
-                    #{f.magazineCapacity}
-                </h:column>
-                <h:column>
-                    <f:facet name="header">#{messages['list.show']}</f:facet>
-                    <h:form>
-                        <h:link outcome="/firearm/firearm_edit.xhtml" value="#{messages['firearm.edit']}"
-                            styleClass="btn small ghost">
-                            <f:param name="id" value="#{f.id}" />
-                        </h:link>
-                        &#160;|&#160;
-                        <h:commandButton value="#{messages['firearm.delete']}" styleClass="btn small"
-                            action="#{weaponFamilyView.deleteFirearm(f.id)}"
-                            onclick="if(!confirm(&quot;#{messages['firearm.delete.confirm']}&quot;)) return false;" />
-                    </h:form>
-                </h:column>
-            </h:dataTable>
+            <h:form id="firearmsForm">
+                <h:panelGroup id="firearmsTable">
+                    <h:dataTable value="#{weaponFamilyView.firearms}" var="f" styleClass="table-clean">
+                        <h:column>
+                            <f:facet name="header">#{messages['firearm.name']}</f:facet>
+                            <h:link value="#{f.name}" outcome="/firearm/firearm_view.xhtml">
+                                <f:param name="id" value="#{f.id}" />
+                            </h:link>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{messages['firearm.caliber']}</f:facet>
+                            #{f.caliber}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{messages['firearm.capacity']}</f:facet>
+                            #{f.magazineCapacity}
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">#{messages['list.show']}</f:facet>
+                            <h:link outcome="/firearm/firearm_edit.xhtml" value="#{messages['firearm.edit']}"
+                                styleClass="btn small ghost">
+                                <f:param name="id" value="#{f.id}" />
+                            </h:link>
+                            &#160;|&#160;
+                            <h:commandButton value="#{messages['firearm.delete']}" styleClass="btn small"
+                                action="#{weaponFamilyView.deleteFirearm(f.id)}"
+                                onclick="return confirm('#{messages['firearm.delete.confirm']}');">
+                                <f:ajax execute="@this" render="firearmsTable" />
+                            </h:commandButton>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+            </h:form>
 
             <h:link outcome="/firearm/firearm_create.xhtml" value="#{messages['family.add_firearm']}" styleClass="btn">
                 <f:param name="weaponFamilyId" value="#{weaponFamilyView.weaponFamily.id}" />
