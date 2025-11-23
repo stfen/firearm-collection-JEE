@@ -3,6 +3,7 @@ package com.firearms.firearmcollectionjee.service;
 import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.User;
 import com.firearms.firearmcollectionjee.entity.enums.UserRoles;
+import com.firearms.firearmcollectionjee.interceptor.Loggable;
 import com.firearms.firearmcollectionjee.repository.api.FirearmRepositoryInterface;
 import com.firearms.firearmcollectionjee.repository.api.UserRepositoryInterface;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
@@ -51,6 +52,7 @@ public class FirearmService {
         firearmRepository.create(firearm);
     }
 
+    @Loggable
     @RolesAllowed(UserRoles.USER)
     public void createForCallerPrincipal(Firearm firearm) {
         User user = userRepository.findByLogin(securityContext.getCallerPrincipal().getName())
@@ -60,13 +62,14 @@ public class FirearmService {
         createFirearm(firearm);
     }
 
-
+    @Loggable
     @RolesAllowed({UserRoles.ADMIN, UserRoles.USER})
     public void updateFirearm(Firearm firearm) {
         checkAdminRoleOrOwner(firearmRepository.findById(firearm.getId()));
         firearmRepository.update(firearm);
     }
 
+    @Loggable
     @RolesAllowed({UserRoles.ADMIN, UserRoles.USER})
     public void deleteFirearm(UUID id) {
         checkAdminRoleOrOwner(firearmRepository.findById(id));

@@ -1,6 +1,7 @@
 package com.firearms.firearmcollectionjee.service;
 
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
+import com.firearms.firearmcollectionjee.interceptor.Loggable;
 import com.firearms.firearmcollectionjee.repository.api.WeaponFamilyRepositoryInterface;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
@@ -23,11 +24,12 @@ public class WeaponFamilyService {
     private final FirearmService firearmService;
 
     @Inject
-    public WeaponFamilyService(WeaponFamilyRepositoryInterface weaponFamilyRepository, FirearmService firearmService){
+    public WeaponFamilyService(WeaponFamilyRepositoryInterface weaponFamilyRepository, FirearmService firearmService) {
         this.weaponFamilyRepository = weaponFamilyRepository;
         this.firearmService = firearmService;
     }
 
+    @Loggable
     @RolesAllowed(UserRoles.ADMIN)
     public void createWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
@@ -36,6 +38,7 @@ public class WeaponFamilyService {
         weaponFamilyRepository.create(weaponFamily);
     }
 
+    @Loggable
     @RolesAllowed(UserRoles.ADMIN)
     public void updateWeaponFamily(WeaponFamily weaponFamily) {
         if (weaponFamily == null) {
@@ -51,6 +54,7 @@ public class WeaponFamilyService {
         return weaponFamilyRepository.findById(id);
     }
 
+    @Loggable
     @RolesAllowed(UserRoles.ADMIN)
     public void deleteWeaponFamily(UUID id) {
         weaponFamilyRepository.delete(weaponFamilyRepository.findById(id).orElseThrow());
