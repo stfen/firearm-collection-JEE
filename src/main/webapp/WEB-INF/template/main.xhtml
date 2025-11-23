@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
     xmlns:f="jakarta.faces.core">
-<f:view>
+<f:view locale="#{localeBean.locale}">
     <h:head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -59,16 +59,14 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                             <li>
                                 <h:form>
-                                    <h:commandLink action="#{localeBean.changeLanguage('en')}"
-                                        styleClass="dropdown-item">
+                                    <h:commandLink action="#{localeBean.setLanguage('en')}" styleClass="dropdown-item">
                                         English
                                     </h:commandLink>
                                 </h:form>
                             </li>
                             <li>
                                 <h:form>
-                                    <h:commandLink action="#{localeBean.changeLanguage('pl')}"
-                                        styleClass="dropdown-item">
+                                    <h:commandLink action="#{localeBean.setLanguage('pl')}" styleClass="dropdown-item">
                                         Polski
                                     </h:commandLink>
                                 </h:form>

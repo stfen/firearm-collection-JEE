@@ -10,26 +10,22 @@ import java.util.Locale;
 @SessionScoped
 public class LocaleBean implements Serializable {
 
-    private Locale locale;
-
-    public Locale getLocale() {
-        if (locale == null) {
-            FacesContext context = FacesContext.getCurrentInstance();
-            if (context.getViewRoot() != null) {
-                locale = context.getViewRoot().getLocale();
-            } else {
-                locale = context.getApplication().getDefaultLocale();
-            }
-        }
-        return locale;
-    }
+    private String language = "en"; // Default to English
 
     public String getLanguage() {
-        return getLocale().getLanguage();
+        return language;
     }
 
-    public void changeLanguage(String language) {
-        locale = new Locale(language);
-        FacesContext.getCurrentInstance().getViewRoot().setLocale(locale);
+    public void setLanguage(String language) {
+        this.language = language;
+        // Update the view locale
+        FacesContext context = FacesContext.getCurrentInstance();
+        if (context != null && context.getViewRoot() != null) {
+            context.getViewRoot().setLocale(new Locale(language));
+        }
+    }
+
+    public Locale getLocale() {
+        return new Locale(language);
     }
 }
