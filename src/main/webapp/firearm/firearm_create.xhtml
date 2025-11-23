@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="jakarta.faces.html"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
         <f:viewParam name="weaponFamilyId" value="#{firearmForm.weaponFamilyIdParam}" />
@@ -12,30 +9,32 @@
     </f:metadata>
 
     <ui:define name="content">
-        <h2>Utwórz nowy element (Firearm)</h2>
+        <h2>#{messages['firearm.create']}</h2>
         <h:form styleClass="card-like">
             <h:panelGrid columns="2" styleClass="form-row">
-                <h:outputLabel value="Nazwa" />
+                <h:outputLabel value="#{messages['firearm.name']}" />
                 <h:inputText value="#{firearmForm.name}" styleClass="" />
 
-                <h:outputLabel value="Kaliber" />
+                <h:outputLabel value="#{messages['firearm.caliber']}" />
                 <h:inputText value="#{firearmForm.caliber}" />
 
-                <h:outputLabel value="Pojemność magazynka" />
+                <h:outputLabel value="#{messages['firearm.capacity']}" />
                 <h:inputText value="#{firearmForm.magazineCapacity}" />
 
-                <h:outputLabel value="Data produkcji (YYYY-MM-DD)" />
+                <h:outputLabel value="#{messages['firearm.production']}" />
                 <h:inputText value="#{firearmForm.productionDate}" />
 
-                <h:outputLabel value="Kategoria" />
+                <h:outputLabel value="#{messages['firearm.category']}" />
                 <h:selectOneMenu value="#{firearmForm.weaponFamily}" converter="weaponFamilyConverter" styleClass="">
-                    <f:selectItems value="#{firearmForm.availableWeaponFamilies}" var="wf" itemValue="#{wf}" itemLabel="#{wf.name}" />
+                    <f:selectItems value="#{firearmForm.availableWeaponFamilies}" var="wf" itemValue="#{wf}"
+                        itemLabel="#{wf.name}" />
                 </h:selectOneMenu>
             </h:panelGrid>
 
             <div class="form-actions">
-                <h:commandButton value="Zapisz" styleClass="btn" action="#{firearmForm.save}" />
-                <h:link value="Anuluj" styleClass="btn secondary" outcome="/weaponfamily/weaponfamily_list.xhtml" />
+                <h:commandButton value="#{messages['firearm.save']}" styleClass="btn" action="#{firearmForm.save}" />
+                <h:link value="#{messages['firearm.cancel']}" styleClass="btn secondary"
+                    outcome="/weaponfamily/weaponfamily_list.xhtml" />
             </div>
         </h:form>
     </ui:define>

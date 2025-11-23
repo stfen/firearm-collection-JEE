@@ -26,6 +26,9 @@ public class FirearmForm implements Serializable {
     @Inject
     WeaponFamilyService weaponFamilyService;
 
+    @Inject
+    jakarta.servlet.http.HttpServletRequest request;
+
     private UUID id;
     private String name;
     private Double caliber;
@@ -42,6 +45,19 @@ public class FirearmForm implements Serializable {
             Optional<Firearm> f = firearmService.findById(id);
             if (f.isPresent()) {
                 Firearm fa = f.get();
+
+                // Authorization check: only owner or admin can edit
+                boolean isAdmin = request.isUserInRole("admin");
+                boolean isOwner = fa.getUser() != null &&
+                        request.getUserPrincipal() != null &&
+                        fa.getUser().getLogin().equals(request.getUserPrincipal().getName());
+
+                if (!isAdmin && !isOwner) {
+                    FacesContext.getCurrentInstance().getExternalContext()
+                            .responseSendError(403, "Access denied");
+                    return;
+                }
+
                 this.name = fa.getName();
                 this.caliber = fa.getCaliber();
                 this.magazineCapacity = fa.getMagazineCapacity();
@@ -76,44 +92,92 @@ public class FirearmForm implements Serializable {
                     .productionDate(productionDate)
                     .weaponFamily(weaponFamily)
                     .build();
-            firearmService.createFirearm(f);
-            return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id=" + (weaponFamily != null ? weaponFamily.getId() : "");
+            firearmService.createForCallerPrincipal(f);
+            return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
+                    + (weaponFamily != null ? weaponFamily.getId() : "");
         } else {
             // update
             Optional<Firearm> of = firearmService.findById(id);
             if (of.isPresent()) {
                 Firearm f = of.get();
+
+                // Authorization check: only owner or admin can update
+                boolean isAdmin = request.isUserInRole("admin");
+                boolean isOwner = f.getUser() != null &&
+                        request.getUserPrincipal() != null &&
+                        f.getUser().getLogin().equals(request.getUserPrincipal().getName());
+
+                if (!isAdmin && !isOwner) {
+                    return null; // or redirect to error page
+                }
+
                 f.setName(name);
                 f.setCaliber(caliber == null ? 0.0 : caliber);
                 f.setMagazineCapacity(magazineCapacity == null ? 0 : magazineCapacity);
                 f.setProductionDate(productionDate);
                 f.setWeaponFamily(weaponFamily);
                 firearmService.updateFirearm(f);
-                return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id=" + (weaponFamily != null ? weaponFamily.getId() : "");
+                return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
+                        + (weaponFamily != null ? weaponFamily.getId() : "");
             } else {
                 return null;
             }
         }
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
-    public Double getCaliber() { return caliber; }
-    public void setCaliber(Double caliber) { this.caliber = caliber; }
+    public String getName() {
+        return name;
+    }
 
-    public Integer getMagazineCapacity() { return magazineCapacity; }
-    public void setMagazineCapacity(Integer magazineCapacity) { this.magazineCapacity = magazineCapacity; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public LocalDate getProductionDate() { return productionDate; }
-    public void setProductionDate(LocalDate productionDate) { this.productionDate = productionDate; }
+    public Double getCaliber() {
+        return caliber;
+    }
 
-    public WeaponFamily getWeaponFamily() { return weaponFamily; }
-    public void setWeaponFamily(WeaponFamily weaponFamily) { this.weaponFamily = weaponFamily; }
+    public void setCaliber(Double caliber) {
+        this.caliber = caliber;
+    }
 
-    public String getWeaponFamilyIdParam() { return weaponFamilyIdParam; }
-    public void setWeaponFamilyIdParam(String weaponFamilyIdParam) { this.weaponFamilyIdParam = weaponFamilyIdParam; }
+    public Integer getMagazineCapacity() {
+        return magazineCapacity;
+    }
+
+    public void setMagazineCapacity(Integer magazineCapacity) {
+        this.magazineCapacity = magazineCapacity;
+    }
+
+    public LocalDate getProductionDate() {
+        return productionDate;
+    }
+
+    public void setProductionDate(LocalDate productionDate) {
+        this.productionDate = productionDate;
+    }
+
+    public WeaponFamily getWeaponFamily() {
+        return weaponFamily;
+    }
+
+    public void setWeaponFamily(WeaponFamily weaponFamily) {
+        this.weaponFamily = weaponFamily;
+    }
+
+    public String getWeaponFamilyIdParam() {
+        return weaponFamilyIdParam;
+    }
+
+    public void setWeaponFamilyIdParam(String weaponFamilyIdParam) {
+        this.weaponFamilyIdParam = weaponFamilyIdParam;
+    }
 }

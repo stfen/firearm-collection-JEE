@@ -7,38 +7,39 @@
 
         <article class="card-like">
             <header class="article-header">
-                <h2 class="article-title">Lista kategorii (Weapon Families)</h2>
+                <h2 class="article-title">#{messages['list.title']}</h2>
             </header>
 
             <h:dataTable value="#{weaponFamilyList.weaponFamilies.weaponFamilies}" var="wf" styleClass="table-clean"
                 headerClass="bg-light">
                 <h:column>
-                    <f:facet name="header">Nazwa</f:facet>
+                    <f:facet name="header">#{messages['list.name']}</f:facet>
                     <h:outputText value="#{wf.name}" />
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">Optymalny zasięg</f:facet>
+                    <f:facet name="header">#{messages['list.range']}</f:facet>
                     <h:outputText value="#{wf.optimalRange}" />
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">Ammo</f:facet>
+                    <f:facet name="header">#{messages['list.ammo']}</f:facet>
                     <h:outputText value="#{wf.ammoType}" />
                 </h:column>
 
                 <h:column>
-                    <f:facet name="header">Pokaż</f:facet>
-                    <h:link outcome="/weaponfamily/weaponfamily_view.xhtml" value="Pokaż">
+                    <f:facet name="header">#{messages['list.show']}</f:facet>
+                    <h:link outcome="/weaponfamily/weaponfamily_view.xhtml" value="#{messages['list.show']}">
                         <f:param name="id" value="#{wf.id}" />
                     </h:link>
                 </h:column>
 
                 <h:column rendered="#{request.isUserInRole('admin')}">
-                    <f:facet name="header">Usuń</f:facet>
+                    <f:facet name="header">#{messages['list.delete']}</f:facet>
                     <h:form>
-                        <h:commandButton styleClass="btn" value="Usuń" action="#{weaponFamilyList.delete(wf.id)}"
-                            onclick="if(!confirm('Usuń kategorię wraz z elementami?')) return false;" />
+                        <h:commandButton styleClass="btn" value="#{messages['list.delete']}"
+                            action="#{weaponFamilyList.delete(wf.id)}"
+                            onclick="if(!confirm(&quot;#{messages['list.delete.confirm']}&quot;)) return false;" />
                     </h:form>
                 </h:column>
             </h:dataTable>

@@ -9,6 +9,7 @@
         <title>Firearm Collection</title>
 
         <h:outputStylesheet library="webjars" name="mdb-ui-kit/6.4.0/css/mdb.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <h:outputStylesheet library="default" name="css/main.css" />
         <h:outputScript library="webjars" name="mdb-ui-kit/6.4.0/js/mdb.min.js" />
         <h:outputScript library="mdb" name="js/main.js" target="body" />
@@ -16,36 +17,64 @@
 
     <h:body>
         <div class="container">
-            <h:graphicImage class="logo" library="default" name="images/logo.svg" alt="Firearm Collection Logo">
+            <h:graphicImage class="logo" library="default" name="images/logo_#{view.locale.language}.svg"
+                alt="Firearm Collection Logo">
             </h:graphicImage>
             <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-3">
                 <div class="container-fluid">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <h:link styleClass="nav-link" outcome="/index.xhtml">Home</h:link>
+                            <h:link styleClass="nav-link" outcome="/index.xhtml">#{messages['nav.home']}</h:link>
                         </li>
                         <li class="nav-item">
-                            <h:link styleClass="nav-link" outcome="/weaponfamily/weaponfamily_list.xhtml">Categories
+                            <h:link styleClass="nav-link" outcome="/weaponfamily/weaponfamily_list.xhtml">
+                                #{messages['nav.categories']}
                             </h:link>
                         </li>
                         <ui:fragment rendered="#{request.userPrincipal != null}">
                             <li class="nav-item">
-                                <span class="nav-link disabled">Logged in as: #{request.userPrincipal.name}</span>
+                                <span class="nav-link disabled">#{messages['logged']}
+                                    #{request.userPrincipal.name}</span>
                             </li>
                             <li class="nav-item">
                                 <h:form>
-                                    <h:commandButton styleClass="btn btn-sm btn-outline-danger" value="Logout"
-                                        action="#{userLogout.logoutAction()}" />
+                                    <h:commandButton styleClass="btn btn-sm btn-outline-danger"
+                                        value="#{messages['logout']}" action="#{userLogout.logoutAction()}" />
                                 </h:form>
                             </li>
                         </ui:fragment>
                         <ui:fragment rendered="#{request.userPrincipal == null}">
                             <li class="nav-item">
-                                <h:link styleClass="nav-link" outcome="/authentication/custom/login.xhtml">Login
+                                <h:link styleClass="nav-link" outcome="/authentication/custom/login.xhtml">
+                                    #{messages['login']}
                                 </h:link>
                             </li>
                         </ui:fragment>
                     </ul>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                            id="languageDropdown" data-mdb-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-globe"></i> #{localeBean.language.toUpperCase()}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                            <li>
+                                <h:form>
+                                    <h:commandLink action="#{localeBean.changeLanguage('en')}"
+                                        styleClass="dropdown-item">
+                                        English
+                                    </h:commandLink>
+                                </h:form>
+                            </li>
+                            <li>
+                                <h:form>
+                                    <h:commandLink action="#{localeBean.changeLanguage('pl')}"
+                                        styleClass="dropdown-item">
+                                        Polski
+                                    </h:commandLink>
+                                </h:form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
 
@@ -53,7 +82,7 @@
                 <ui:insert name="content" />
             </main>
             <footer>
-                Footer
+                #{messages['footer.text']}
             </footer>
         </div>
     </h:body>

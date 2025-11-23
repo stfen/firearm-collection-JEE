@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
+    template="/WEB-INF/template/main.xhtml">
 
     <ui:define name="content">
         <h:panelGroup>
-            <h2>Firearm Collection app</h2>
-            <p>This is the home page of the application — it uses the global view template.</p>
+            <h2>#{messages['index.welcome']}</h2>
+            <p>#{messages['index.description']}</p>
         </h:panelGroup>
     </ui:define>
 

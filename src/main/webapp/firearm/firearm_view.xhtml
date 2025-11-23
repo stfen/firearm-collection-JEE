@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="jakarta.faces.facelets"
-                xmlns:h="jakarta.faces.html"
-                xmlns:f="jakarta.faces.core"
-                template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:h="jakarta.faces.html"
+    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
         <f:viewParam name="id" value="#{firearmView.id}" required="true" />
@@ -13,22 +10,32 @@
 
     <ui:define name="content">
         <article class="card-like">
-            <header class="article-header"><h2 class="article-title"><h:outputText value="#{firearmView.firearm.name}"/></h2></header>
+            <header class="article-header">
+                <h2 class="article-title">
+                    <h:outputText value="#{firearmView.firearm.name}" />
+                </h2>
+            </header>
             <div class="mb-2">
                 <div class="form-row">
                     <div class="form-field">
-                        <label class="kv">Kaliber</label>
-                        <div class="value"><h:outputText value="#{firearmView.firearm.caliber}"/></div>
+                        <label class="kv">#{messages['firearm.caliber']}</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.caliber}" />
+                        </div>
                     </div>
 
                     <div class="form-field">
-                        <label class="kv">Pojemność magazynka</label>
-                        <div class="value"><h:outputText value="#{firearmView.firearm.magazineCapacity}"/></div>
+                        <label class="kv">#{messages['firearm.capacity']}</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.magazineCapacity}" />
+                        </div>
                     </div>
 
                     <div class="form-field">
-                        <label class="kv">Data produkcji</label>
-                        <div class="value"><h:outputText value="#{firearmView.firearm.productionDate}"/></div>
+                        <label class="kv">#{messages['firearm.production']}</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.productionDate}" />
+                        </div>
                     </div>
                 </div>
             </div>
