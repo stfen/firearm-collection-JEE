@@ -84,6 +84,16 @@ public class UserLogin {
         Credential credential = new UsernamePasswordCredential(login, new Password(password));
         AuthenticationStatus status = securityContext.authenticate(request, response,
                 withParams().credential(credential));
+
+        if (status == AuthenticationStatus.SUCCESS) {
+            // Redirect to homepage after successful login
+            facesContext.getExternalContext().redirect(request.getContextPath() + "/index.xhtml");
+        } else {
+            // Redirect to error page on authentication failure
+            facesContext.getExternalContext()
+                    .redirect(request.getContextPath() + "/authentication/custom/login_error.xhtml");
+        }
+
         facesContext.responseComplete();
     }
 
