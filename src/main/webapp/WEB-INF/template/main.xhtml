@@ -37,6 +37,10 @@
                                     #{request.userPrincipal.name}</span>
                             </li>
                             <li class="nav-item">
+                                <h:link styleClass="nav-link" outcome="/chat/chat.xhtml">#{messages['nav.chat']}
+                                </h:link>
+                            </li>
+                            <li class="nav-item">
                                 <h:form>
                                     <h:commandButton styleClass="btn btn-sm btn-outline-danger"
                                         value="#{messages['logout']}" action="#{userLogout.logoutAction()}" />

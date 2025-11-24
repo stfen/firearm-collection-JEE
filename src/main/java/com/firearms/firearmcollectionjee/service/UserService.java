@@ -149,6 +149,16 @@ public class UserService {
     }
 
     /**
+     * Get all users for chat (accessible by all logged in users).
+     *
+     * @return List of all users
+     */
+    @PermitAll
+    public List<User> getUsersForChat() {
+        return userRepository.findAll();
+    }
+
+    /**
      * Delete user by ID.
      * 
      * @param id the user ID
