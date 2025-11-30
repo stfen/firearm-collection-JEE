@@ -10,6 +10,9 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -51,10 +54,16 @@ public class FirearmRepository implements FirearmRepositoryInterface {
     @Override
     public Optional<Firearm> findByIdAndUser(UUID id, User user) {
         try {
-            return Optional.of(em.createQuery("select c from Firearm c where c.id = :id and c.user = :user", Firearm.class)
-                    .setParameter("user", user)
-                    .setParameter("id", id)
-                    .getSingleResult());
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Firearm> query = cb.createQuery(Firearm.class);
+            Root<Firearm> firearm = query.from(Firearm.class);
+            query.select(firearm).where(
+                cb.and(
+                    cb.equal(firearm.get("id"), id),
+                    cb.equal(firearm.get("user"), user)
+                )
+            );
+            return Optional.of(em.createQuery(query).getSingleResult());
         } catch (NoResultException ex) {
             return Optional.empty();
         }
@@ -62,20 +71,28 @@ public class FirearmRepository implements FirearmRepositoryInterface {
 
     @Override
     public List<Firearm> findAllByUser(User user) {
-        return em.createQuery("select f from Firearm f where f.user = :user", Firearm.class)
-                .setParameter("user", user)
-                .getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Firearm> query = cb.createQuery(Firearm.class);
+        Root<Firearm> firearm = query.from(Firearm.class);
+        query.select(firearm).where(cb.equal(firearm.get("user"), user));
+        return em.createQuery(query).getResultList();
     }
 
     @Override
     public List<Firearm> findAllByWeaponFamily(WeaponFamily weaponFamily) {
-        return em.createQuery("select f from Firearm f where f.weaponFamily = :weapon_family", Firearm.class)
-                .setParameter("weapon_family", weaponFamily)
-                .getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Firearm> query = cb.createQuery(Firearm.class);
+        Root<Firearm> firearm = query.from(Firearm.class);
+        query.select(firearm).where(cb.equal(firearm.get("weaponFamily"), weaponFamily));
+        return em.createQuery(query).getResultList();
     }
 
     @Override
     public List<Firearm> findAll(){
-        return em.createQuery("select f from Firearm f", Firearm.class).getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Firearm> query = cb.createQuery(Firearm.class);
+        Root<Firearm> firearm = query.from(Firearm.class);
+        query.select(firearm);
+        return em.createQuery(query).getResultList();
     }
 }

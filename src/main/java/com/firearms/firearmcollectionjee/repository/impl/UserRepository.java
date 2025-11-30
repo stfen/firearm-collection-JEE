@@ -6,6 +6,9 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -49,23 +52,29 @@ public class UserRepository implements UserRepositoryInterface {
     
     @Override
     public Optional<User> findByLogin(String login) {
-    return em.createQuery("select u from User u where u.login = :login", User.class)
-        .setParameter("login", login)
-        .getResultStream()
-        .findFirst();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = cb.createQuery(User.class);
+        Root<User> user = query.from(User.class);
+        query.select(user).where(cb.equal(user.get("login"), login));
+        return em.createQuery(query).getResultStream().findFirst();
     }
     
     @Override
     public Optional<User> findByEmail(String email) {
-    return em.createQuery("select u from User u where u.email = :email", User.class)
-        .setParameter("email", email)
-        .getResultStream()
-        .findFirst();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = cb.createQuery(User.class);
+        Root<User> user = query.from(User.class);
+        query.select(user).where(cb.equal(user.get("email"), email));
+        return em.createQuery(query).getResultStream().findFirst();
     }
     
     @Override
     public List<User> findAll() {
-    return em.createQuery("select u from User u", User.class).getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<User> query = cb.createQuery(User.class);
+        Root<User> user = query.from(User.class);
+        query.select(user);
+        return em.createQuery(query).getResultList();
     }
     
     @Override
@@ -75,17 +84,21 @@ public class UserRepository implements UserRepositoryInterface {
     
     @Override
     public boolean existsByLogin(String login) {
-    Long count = em.createQuery("select count(u) from User u where u.login = :login", Long.class)
-        .setParameter("login", login)
-        .getSingleResult();
-    return count != null && count > 0;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<User> user = query.from(User.class);
+        query.select(cb.count(user)).where(cb.equal(user.get("login"), login));
+        Long count = em.createQuery(query).getSingleResult();
+        return count != null && count > 0;
     }
     
     @Override
     public boolean existsByEmail(String email) {
-    Long count = em.createQuery("select count(u) from User u where u.email = :email", Long.class)
-        .setParameter("email", email)
-        .getSingleResult();
-    return count != null && count > 0;
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Long> query = cb.createQuery(Long.class);
+        Root<User> user = query.from(User.class);
+        query.select(cb.count(user)).where(cb.equal(user.get("email"), email));
+        Long count = em.createQuery(query).getSingleResult();
+        return count != null && count > 0;
     }
 }

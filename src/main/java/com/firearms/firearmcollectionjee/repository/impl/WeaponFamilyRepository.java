@@ -6,6 +6,9 @@ import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -51,6 +54,10 @@ public class WeaponFamilyRepository implements WeaponFamilyRepositoryInterface {
 
     @Override
     public List<WeaponFamily> findAll(){
-        return em.createQuery("select w from WeaponFamily w", WeaponFamily.class).getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<WeaponFamily> query = cb.createQuery(WeaponFamily.class);
+        Root<WeaponFamily> weaponFamily = query.from(WeaponFamily.class);
+        query.select(weaponFamily);
+        return em.createQuery(query).getResultList();
     }
 }
