@@ -3,12 +3,12 @@ package com.firearms.firearmcollectionjee.entity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -20,17 +20,18 @@ import java.util.UUID;
  */
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
 @Entity
 @Table(name = "firearms")
-public class Firearm implements Serializable {
+public class Firearm extends VersionAndAuditDateAuditable implements Serializable {
 
     @Id
     private UUID id;
+
     private String name;
     private double caliber;
 

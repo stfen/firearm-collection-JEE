@@ -44,6 +44,10 @@
                             #{f.magazineCapacity}
                         </h:column>
                         <h:column>
+                            <f:facet name="header">Version</f:facet>
+                            #{f.version}
+                        </h:column>
+                        <h:column>
                             <f:facet name="header">#{messages['list.show']}</f:facet>
                             <h:link outcome="/firearm/firearm_edit.xhtml" value="#{messages['firearm.edit']}"
                                 styleClass="btn small ghost">

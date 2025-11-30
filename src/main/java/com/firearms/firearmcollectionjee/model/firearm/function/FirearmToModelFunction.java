@@ -14,10 +14,13 @@ public class FirearmToModelFunction implements Function<Firearm, FirearmModel> {
         if (f == null) return null;
         return FirearmModel.builder()
                 .id(f.getId())
+                .version(f.getVersion())
                 .name(f.getName())
                 .caliber(f.getCaliber())
                 .magazineCapacity(f.getMagazineCapacity())
                 .productionDate(f.getProductionDate())
+                .creationDateTime(f.getCreationDateTime())
+                .lastModificationDateTime(f.getLastModificationDateTime())
                 .build();
     }
 }

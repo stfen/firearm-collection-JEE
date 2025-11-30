@@ -4,10 +4,13 @@ import com.firearms.firearmcollectionjee.entity.Firearm;
 import com.firearms.firearmcollectionjee.entity.WeaponFamily;
 import com.firearms.firearmcollectionjee.service.FirearmService;
 import com.firearms.firearmcollectionjee.service.WeaponFamilyService;
+import jakarta.ejb.EJBException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.persistence.OptimisticLockException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -30,6 +33,7 @@ public class FirearmForm implements Serializable {
     jakarta.servlet.http.HttpServletRequest request;
 
     private UUID id;
+    private Long version;
     private String name;
     private Double caliber;
     private Integer magazineCapacity;
@@ -38,6 +42,15 @@ public class FirearmForm implements Serializable {
 
     // for binding via f:viewParam when creating with preselected family
     private String weaponFamilyIdParam;
+
+    // for conflict resolution
+    private boolean conflictDetected = false;
+    private Firearm currentDbFirearm;
+    private String userAttemptedName;
+    private Double userAttemptedCaliber;
+    private Integer userAttemptedMagazineCapacity;
+    private LocalDate userAttemptedProductionDate;
+    private WeaponFamily userAttemptedWeaponFamily;
 
     public void init() throws IOException {
         // if id is set -> edit mode
@@ -63,6 +76,7 @@ public class FirearmForm implements Serializable {
                 this.magazineCapacity = fa.getMagazineCapacity();
                 this.productionDate = fa.getProductionDate();
                 this.weaponFamily = fa.getWeaponFamily();
+                this.version = fa.getVersion();
             } else {
                 FacesContext.getCurrentInstance().getExternalContext()
                         .responseSendError(404, "Firearm not found");
@@ -116,13 +130,83 @@ public class FirearmForm implements Serializable {
                 f.setMagazineCapacity(magazineCapacity == null ? 0 : magazineCapacity);
                 f.setProductionDate(productionDate);
                 f.setWeaponFamily(weaponFamily);
-                firearmService.updateFirearm(f);
-                return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
-                        + (weaponFamily != null ? weaponFamily.getId() : "");
+                f.setVersion(version); // Set the version for optimistic locking
+
+                try {
+                    firearmService.updateFirearm(f);
+                    conflictDetected = false;
+                    return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
+                            + (weaponFamily != null ? weaponFamily.getId() : "");
+                } catch (EJBException ejbEx) {
+                    // Check if the root cause is OptimisticLockException
+                    Throwable cause = ejbEx.getCause();
+                    if (cause instanceof OptimisticLockException || 
+                        cause != null && cause.getClass().getName().contains("OptimisticLockException")) {
+                        handleOptimisticLockException();
+                        return null; // Stay on the same page to show conflict resolution UI
+                    } else {
+                        throw ejbEx; // Re-throw if it's not an optimistic lock exception
+                    }
+                } catch (OptimisticLockException e) {
+                    handleOptimisticLockException();
+                    return null; // Stay on the same page to show conflict resolution UI
+                }
             } else {
                 return null;
             }
         }
+    }
+
+    private void handleOptimisticLockException() {
+        // Store user's attempted values
+        userAttemptedName = name;
+        userAttemptedCaliber = caliber;
+        userAttemptedMagazineCapacity = magazineCapacity;
+        userAttemptedProductionDate = productionDate;
+        userAttemptedWeaponFamily = weaponFamily;
+
+        // Reload current DB state
+        Optional<Firearm> reloaded = firearmService.findById(id);
+        if (reloaded.isPresent()) {
+            currentDbFirearm = reloaded.get();
+            
+            // Update form fields with DB values
+            this.name = currentDbFirearm.getName();
+            this.caliber = currentDbFirearm.getCaliber();
+            this.magazineCapacity = currentDbFirearm.getMagazineCapacity();
+            this.productionDate = currentDbFirearm.getProductionDate();
+            this.weaponFamily = currentDbFirearm.getWeaponFamily();
+            this.version = currentDbFirearm.getVersion();
+        }
+
+        conflictDetected = true;
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_WARN,
+                        "Version Conflict Detected!",
+                        "Someone else has modified this firearm while you were editing. Please review both versions below and choose which one to keep."));
+    }
+
+    public String keepDatabaseVersion() {
+        // Already loaded with DB values, just clear conflict flag
+        conflictDetected = false;
+        return null; // Stay on page with DB values loaded
+    }
+
+    public String overrideWithMyChanges() {
+        // Restore user's attempted values
+        this.name = userAttemptedName;
+        this.caliber = userAttemptedCaliber;
+        this.magazineCapacity = userAttemptedMagazineCapacity;
+        this.productionDate = userAttemptedProductionDate;
+        this.weaponFamily = userAttemptedWeaponFamily;
+        
+        // Update the version to current DB version
+        this.version = currentDbFirearm.getVersion();
+        
+        conflictDetected = false;
+        
+        // Save again with the updated version
+        return save();
     }
 
     public UUID getId() {
@@ -179,5 +263,41 @@ public class FirearmForm implements Serializable {
 
     public void setWeaponFamilyIdParam(String weaponFamilyIdParam) {
         this.weaponFamilyIdParam = weaponFamilyIdParam;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public boolean isConflictDetected() {
+        return conflictDetected;
+    }
+
+    public Firearm getCurrentDbFirearm() {
+        return currentDbFirearm;
+    }
+
+    public String getUserAttemptedName() {
+        return userAttemptedName;
+    }
+
+    public Double getUserAttemptedCaliber() {
+        return userAttemptedCaliber;
+    }
+
+    public Integer getUserAttemptedMagazineCapacity() {
+        return userAttemptedMagazineCapacity;
+    }
+
+    public LocalDate getUserAttemptedProductionDate() {
+        return userAttemptedProductionDate;
+    }
+
+    public WeaponFamily getUserAttemptedWeaponFamily() {
+        return userAttemptedWeaponFamily;
     }
 }

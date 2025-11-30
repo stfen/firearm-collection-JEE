@@ -1,17 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:h="jakarta.faces.html" xmlns:ui="jakarta.faces.facelets"
-    xmlns:f="jakarta.faces.core" template="/WEB-INF/template/main.xhtml">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:ui="jakarta.faces.facelets"
+                xmlns:f="jakarta.faces.core"
+                template="/WEB-INF/template/main.xhtml">
 
     <f:metadata>
-        <f:viewParam name="id" value="#{firearmForm.id}" required="true" />
+        <f:viewParam name="id" value="#{firearmForm.id}" />
         <f:viewAction action="#{firearmForm.init}" />
     </f:metadata>
 
     <ui:define name="content">
-        <h2>#{messages['firearm.edit.title']}</h2>
+        <h2>#{messages['firearm.edit']}</h2>
+        
         <h:form styleClass="card-like">
-            <h:panelGrid columns="2" styleClass="form-row">
+            <h:messages globalOnly="true" errorClass="error-message" infoClass="info-message" />
+            
+            <!-- Hidden field for version (optimistic locking) -->
+            <h:inputHidden value="#{firearmForm.version}" />
+            
+            <!-- Conflict Resolution UI -->
+            <h:panelGroup rendered="#{firearmForm.conflictDetected}" styleClass="conflict-panel">
+                <h3 style="color: red;">Version Conflict Detected!</h3>
+                <p>Someone else has modified this firearm while you were editing. Please choose:</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                    <!-- Database Current Values -->
+                    <div style="border: 2px solid #007bff; padding: 15px; border-radius: 5px;">
+                        <h4 style="color: #007bff;">Current Database Version</h4>
+                        <p><strong>Name:</strong> #{firearmForm.currentDbFirearm.name}</p>
+                        <p><strong>Caliber:</strong> #{firearmForm.currentDbFirearm.caliber}</p>
+                        <p><strong>Magazine Capacity:</strong> #{firearmForm.currentDbFirearm.magazineCapacity}</p>
+                        <p><strong>Production Date:</strong> #{firearmForm.currentDbFirearm.productionDate}</p>
+                        <p><strong>Category:</strong> #{firearmForm.currentDbFirearm.weaponFamily.name}</p>
+                        <p><strong>Version:</strong> #{firearmForm.currentDbFirearm.version}</p>
+                        <h:commandButton value="Keep Database Version" styleClass="btn" 
+                                         action="#{firearmForm.keepDatabaseVersion}" />
+                    </div>
+                    
+                    <!-- Your Attempted Values -->
+                    <div style="border: 2px solid #dc3545; padding: 15px; border-radius: 5px;">
+                        <h4 style="color: #dc3545;">Your Changes</h4>
+                        <p><strong>Name:</strong> #{firearmForm.userAttemptedName}</p>
+                        <p><strong>Caliber:</strong> #{firearmForm.userAttemptedCaliber}</p>
+                        <p><strong>Magazine Capacity:</strong> #{firearmForm.userAttemptedMagazineCapacity}</p>
+                        <p><strong>Production Date:</strong> #{firearmForm.userAttemptedProductionDate}</p>
+                        <p><strong>Category:</strong> #{firearmForm.userAttemptedWeaponFamily.name}</p>
+                        <h:commandButton value="Override with My Changes" styleClass="btn" 
+                                         action="#{firearmForm.overrideWithMyChanges}" />
+                    </div>
+                </div>
+            </h:panelGroup>
+            
+            <!-- Normal Edit Form -->
+            <h:panelGrid columns="2" styleClass="form-row" rendered="#{!firearmForm.conflictDetected}">
                 <h:outputLabel value="#{messages['firearm.name']}" />
                 <h:inputText value="#{firearmForm.name}" />
 
@@ -26,15 +69,15 @@
 
                 <h:outputLabel value="#{messages['firearm.category']}" />
                 <h:selectOneMenu value="#{firearmForm.weaponFamily}" converter="weaponFamilyConverter">
-                    <f:selectItems value="#{firearmForm.availableWeaponFamilies}" var="wf" itemValue="#{wf}"
-                        itemLabel="#{wf.name}" />
+                    <f:selectItems value="#{firearmForm.availableWeaponFamilies}" var="wf" 
+                                   itemValue="#{wf}" itemLabel="#{wf.name}" />
                 </h:selectOneMenu>
             </h:panelGrid>
 
-            <div class="form-actions">
+            <div class="form-actions" rendered="#{!firearmForm.conflictDetected}">
                 <h:commandButton value="#{messages['firearm.save']}" styleClass="btn" action="#{firearmForm.save}" />
-                <h:link value="#{messages['firearm.cancel']}" styleClass="btn secondary"
-                    outcome="/weaponfamily/weaponfamily_view.xhtml">
+                <h:link value="#{messages['firearm.cancel']}" styleClass="btn secondary" 
+                        outcome="/weaponfamily/weaponfamily_view.xhtml">
                     <f:param name="id" value="#{firearmForm.weaponFamily.id}" />
                 </h:link>
             </div>

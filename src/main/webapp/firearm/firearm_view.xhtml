@@ -18,6 +18,13 @@
             <div class="mb-2">
                 <div class="form-row">
                     <div class="form-field">
+                        <label class="kv">Version</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.version}" />
+                        </div>
+                    </div>
+
+                    <div class="form-field">
                         <label class="kv">#{messages['firearm.caliber']}</label>
                         <div class="value">
                             <h:outputText value="#{firearmView.firearm.caliber}" />

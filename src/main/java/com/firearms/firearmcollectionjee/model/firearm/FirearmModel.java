@@ -10,6 +10,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -21,8 +22,11 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class FirearmModel implements Serializable {
     private UUID id;
+    private Long version;
     private String name;
     private double caliber;
     private int magazineCapacity;
     private LocalDate productionDate;
+    private LocalDateTime creationDateTime;
+    private LocalDateTime lastModificationDateTime;
 }
