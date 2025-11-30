@@ -11,6 +11,8 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -96,63 +98,130 @@ public class FirearmForm implements Serializable {
     }
 
     public String save() {
-        if (id == null) {
-            // create
-            Firearm f = Firearm.builder()
-                    .id(UUID.randomUUID())
-                    .name(name)
-                    .caliber(caliber == null ? 0.0 : caliber)
-                    .magazineCapacity(magazineCapacity == null ? 0 : magazineCapacity)
-                    .productionDate(productionDate)
-                    .weaponFamily(weaponFamily)
-                    .build();
-            firearmService.createForCallerPrincipal(f);
-            return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
-                    + (weaponFamily != null ? weaponFamily.getId() : "");
-        } else {
-            // update
-            Optional<Firearm> of = firearmService.findById(id);
-            if (of.isPresent()) {
-                Firearm f = of.get();
+        try {
+            if (id == null) {
+                // create
+                Firearm f = Firearm.builder()
+                        .id(UUID.randomUUID())
+                        .name(name)
+                        .caliber(caliber == null ? 0.0 : caliber)
+                        .magazineCapacity(magazineCapacity == null ? 0 : magazineCapacity)
+                        .productionDate(productionDate)
+                        .weaponFamily(weaponFamily)
+                        .build();
+                firearmService.createForCallerPrincipal(f);
+                return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
+                        + (weaponFamily != null ? weaponFamily.getId() : "");
+            } else {
+                // update
+                Optional<Firearm> of = firearmService.findById(id);
+                if (of.isPresent()) {
+                    Firearm f = of.get();
 
-                // Authorization check: only owner or admin can update
-                boolean isAdmin = request.isUserInRole("admin");
-                boolean isOwner = f.getUser() != null &&
-                        request.getUserPrincipal() != null &&
-                        f.getUser().getLogin().equals(request.getUserPrincipal().getName());
+                    // Authorization check: only owner or admin can update
+                    boolean isAdmin = request.isUserInRole("admin");
+                    boolean isOwner = f.getUser() != null &&
+                            request.getUserPrincipal() != null &&
+                            f.getUser().getLogin().equals(request.getUserPrincipal().getName());
 
-                if (!isAdmin && !isOwner) {
-                    return null; // or redirect to error page
-                }
+                    if (!isAdmin && !isOwner) {
+                        return null; // or redirect to error page
+                    }
 
-                f.setName(name);
-                f.setCaliber(caliber == null ? 0.0 : caliber);
-                f.setMagazineCapacity(magazineCapacity == null ? 0 : magazineCapacity);
-                f.setProductionDate(productionDate);
-                f.setWeaponFamily(weaponFamily);
-                f.setVersion(version); // Set the version for optimistic locking
+                    f.setName(name);
+                    f.setCaliber(caliber == null ? 0.0 : caliber);
+                    f.setMagazineCapacity(magazineCapacity == null ? 0 : magazineCapacity);
+                    f.setProductionDate(productionDate);
+                    f.setWeaponFamily(weaponFamily);
+                    f.setVersion(version); // Set the version for optimistic locking
 
-                try {
-                    firearmService.updateFirearm(f);
-                    conflictDetected = false;
-                    return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
-                            + (weaponFamily != null ? weaponFamily.getId() : "");
-                } catch (EJBException ejbEx) {
-                    // Check if the root cause is OptimisticLockException
-                    Throwable cause = ejbEx.getCause();
-                    if (cause instanceof OptimisticLockException || 
-                        cause != null && cause.getClass().getName().contains("OptimisticLockException")) {
+                    try {
+                        firearmService.updateFirearm(f);
+                        conflictDetected = false;
+                        return "/weaponfamily/weaponfamily_view.xhtml?faces-redirect=true&id="
+                                + (weaponFamily != null ? weaponFamily.getId() : "");
+                    } catch (EJBException ejbEx) {
+                        // Check if the root cause is OptimisticLockException
+                        Throwable cause = ejbEx.getCause();
+                        if (cause instanceof OptimisticLockException || 
+                            cause != null && cause.getClass().getName().contains("OptimisticLockException")) {
+                            handleOptimisticLockException();
+                            return null; // Stay on the same page to show conflict resolution UI
+                        } else {
+                            throw ejbEx; // Re-throw if it's not an optimistic lock exception
+                        }
+                    } catch (OptimisticLockException e) {
                         handleOptimisticLockException();
                         return null; // Stay on the same page to show conflict resolution UI
-                    } else {
-                        throw ejbEx; // Re-throw if it's not an optimistic lock exception
                     }
-                } catch (OptimisticLockException e) {
-                    handleOptimisticLockException();
-                    return null; // Stay on the same page to show conflict resolution UI
+                } else {
+                    return null;
                 }
-            } else {
-                return null;
+            }
+        } catch (EJBException ejbEx) {
+            // Check if the root cause is ConstraintViolationException
+            Throwable cause = ejbEx.getCause();
+            while (cause != null) {
+                if (cause instanceof ConstraintViolationException) {
+                    handleConstraintViolations((ConstraintViolationException) cause);
+                    return null; // Stay on the same page to show validation errors
+                }
+                cause = cause.getCause();
+            }
+            throw ejbEx; // Re-throw if it's not a validation exception
+        } catch (ConstraintViolationException cve) {
+            handleConstraintViolations(cve);
+            return null; // Stay on the same page to show validation errors
+        }
+    }
+
+    private void handleConstraintViolations(ConstraintViolationException cve) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        
+        // Add a global message first to ensure something is visible
+        context.addMessage(null, 
+            new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                "Validation Error", 
+                "Please correct the errors below and try again."));
+        
+        for (ConstraintViolation<?> violation : cve.getConstraintViolations()) {
+            String propertyPath = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            
+            // Extract field name from property path (e.g., "createForCallerPrincipal.firearm.name" -> "name")
+            String fieldName = propertyPath;
+            if (propertyPath.contains(".")) {
+                fieldName = propertyPath.substring(propertyPath.lastIndexOf('.') + 1);
+            }
+            
+            // Map field names to JSF component IDs and add messages
+            switch (fieldName) {
+                case "name":
+                    context.addMessage("firearmForm:name", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+                    break;
+                case "caliber":
+                    context.addMessage("firearmForm:caliber", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+                    break;
+                case "magazineCapacity":
+                    context.addMessage("firearmForm:capacity", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+                    break;
+                case "productionDate":
+                    context.addMessage("firearmForm:production", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+                    break;
+                case "weaponFamily":
+                    context.addMessage("firearmForm:category", 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, message, message));
+                    break;
+                default:
+                    // Add as global message if field not recognized
+                    context.addMessage(null, 
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                            fieldName + ": " + message, message));
+                    break;
             }
         }
     }

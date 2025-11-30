@@ -14,7 +14,7 @@
     <ui:define name="content">
         <h2>#{messages['firearm.edit']}</h2>
         
-        <h:form styleClass="card-like">
+        <h:form id="firearmForm" styleClass="card-like">
             <h:messages globalOnly="true" errorClass="error-message" infoClass="info-message" />
             
             <!-- Hidden field for version (optimistic locking) -->
@@ -54,24 +54,29 @@
             </h:panelGroup>
             
             <!-- Normal Edit Form -->
-            <h:panelGrid columns="2" styleClass="form-row" rendered="#{!firearmForm.conflictDetected}">
-                <h:outputLabel value="#{messages['firearm.name']}" />
-                <h:inputText value="#{firearmForm.name}" />
+            <h:panelGrid columns="3" styleClass="form-row" rendered="#{!firearmForm.conflictDetected}">
+                <h:outputLabel value="#{messages['firearm.name']}" for="name" />
+                <h:inputText id="name" value="#{firearmForm.name}" required="true" />
+                <h:message for="name" errorClass="error-message" />
 
-                <h:outputLabel value="#{messages['firearm.caliber']}" />
-                <h:inputText value="#{firearmForm.caliber}" />
+                <h:outputLabel value="#{messages['firearm.caliber']}" for="caliber" />
+                <h:inputText id="caliber" value="#{firearmForm.caliber}" required="true" />
+                <h:message for="caliber" errorClass="error-message" />
 
-                <h:outputLabel value="#{messages['firearm.capacity']}" />
-                <h:inputText value="#{firearmForm.magazineCapacity}" />
+                <h:outputLabel value="#{messages['firearm.capacity']}" for="capacity" />
+                <h:inputText id="capacity" value="#{firearmForm.magazineCapacity}" required="true" />
+                <h:message for="capacity" errorClass="error-message" />
 
-                <h:outputLabel value="#{messages['firearm.production']}" />
-                <h:inputText value="#{firearmForm.productionDate}" />
+                <h:outputLabel value="#{messages['firearm.production']}" for="production" />
+                <h:inputText id="production" value="#{firearmForm.productionDate}" />
+                <h:message for="production" errorClass="error-message" />
 
-                <h:outputLabel value="#{messages['firearm.category']}" />
-                <h:selectOneMenu value="#{firearmForm.weaponFamily}" converter="weaponFamilyConverter">
+                <h:outputLabel value="#{messages['firearm.category']}" for="category" />
+                <h:selectOneMenu id="category" value="#{firearmForm.weaponFamily}" converter="weaponFamilyConverter" required="true">
                     <f:selectItems value="#{firearmForm.availableWeaponFamilies}" var="wf" 
                                    itemValue="#{wf}" itemLabel="#{wf.name}" />
                 </h:selectOneMenu>
+                <h:message for="category" errorClass="error-message" />
             </h:panelGrid>
 
             <div class="form-actions" rendered="#{!firearmForm.conflictDetected}">

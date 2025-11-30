@@ -14,6 +14,7 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.security.enterprise.SecurityContext;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,7 @@ public class FirearmService {
     }
 
     @RolesAllowed(UserRoles.ADMIN)
-    public void createFirearm(Firearm firearm) {
+    public void createFirearm(@Valid Firearm firearm) {
         if (firearmRepository.findById(firearm.getId()).isPresent()) {
             throw new IllegalArgumentException("Firearm already exists.");
         }
@@ -54,7 +55,7 @@ public class FirearmService {
 
     @Loggable
     @RolesAllowed(UserRoles.USER)
-    public void createForCallerPrincipal(Firearm firearm) {
+    public void createForCallerPrincipal(@Valid Firearm firearm) {
         User user = userRepository.findByLogin(securityContext.getCallerPrincipal().getName())
                 .orElseThrow(IllegalStateException::new);
 
@@ -64,7 +65,7 @@ public class FirearmService {
 
     @Loggable
     @RolesAllowed({UserRoles.ADMIN, UserRoles.USER})
-    public void updateFirearm(Firearm firearm) {
+    public void updateFirearm(@Valid Firearm firearm) {
         checkAdminRoleOrOwner(firearmRepository.findById(firearm.getId()));
         firearmRepository.update(firearm);
     }

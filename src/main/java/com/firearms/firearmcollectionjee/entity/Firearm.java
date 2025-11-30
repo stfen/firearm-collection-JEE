@@ -1,6 +1,8 @@
 package com.firearms.firearmcollectionjee.entity;
 
+import com.firearms.firearmcollectionjee.validation.ValidCaliber;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -32,17 +34,25 @@ public class Firearm extends VersionAndAuditDateAuditable implements Serializabl
     @Id
     private UUID id;
 
+    @NotBlank(message = "Name is required")
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
+
+    @ValidCaliber(message = "Caliber must be between 1.0 and 40.0 mm")
+    @Positive(message = "Caliber must be positive")
     private double caliber;
 
     @Column(name = "magazine_capacity")
+    @Min(value = 1, message = "Magazine capacity must be at least 1")
     private int magazineCapacity;
 
     @ManyToOne
     @JoinColumn(name = "weapon_family")
+    @NotNull(message = "Weapon family is required")
     private WeaponFamily weaponFamily;
 
     @Column(name = "production_date")
+    @PastOrPresent(message = "Production date cannot be in the future")
     private LocalDate productionDate;
 
     @ManyToOne

@@ -187,7 +187,7 @@ public class InitializedData {
             Firearm colt1911 = Firearm.builder()
                     .id(UUID.fromString("66666666-7777-8888-9999-aaaaaaaaaaaa"))
                     .name("Colt 1911")
-                    .caliber(0.45)
+                    .caliber(11.43)
                     .magazineCapacity(7)
                     .weaponFamily(pistol)
                     .productionDate(LocalDate.of(1911, 1, 1))
