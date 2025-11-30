@@ -44,6 +44,20 @@
                             <h:outputText value="#{firearmView.firearm.productionDate}" />
                         </div>
                     </div>
+
+                    <div class="form-field">
+                        <label class="kv">Created</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.creationDateTime}" converter="localDateTimeConverter" />
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="kv">Last Modified</label>
+                        <div class="value">
+                            <h:outputText value="#{firearmView.firearm.lastModificationDateTime}" converter="localDateTimeConverter" />
+                        </div>
+                    </div>
                 </div>
             </div>
         </article>
