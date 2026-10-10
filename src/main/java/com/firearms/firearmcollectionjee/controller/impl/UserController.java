@@ -1,0 +1,124 @@
+package com.firearms.firearmcollectionjee.controller.impl;
+
+import com.firearms.firearmcollectionjee.component.DtoFunctionFactory;
+import com.firearms.firearmcollectionjee.controller.api.UserControllerInterface;
+import jakarta.transaction.TransactionalException;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.BadRequestException;
+import jakarta.ws.rs.NotFoundException;
+import com.firearms.firearmcollectionjee.dto.user.GetUserResponse;
+import com.firearms.firearmcollectionjee.dto.user.GetUsersResponse;
+import com.firearms.firearmcollectionjee.dto.user.PatchUserRequest;
+import com.firearms.firearmcollectionjee.dto.user.PutUserRequest;
+import com.firearms.firearmcollectionjee.service.UserService;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import lombok.NoArgsConstructor;
+import lombok.extern.java.Log;
+
+import java.util.UUID;
+import java.util.logging.Level;
+
+/**
+ * Simple implementation of {@link UserControllerInterface} which delegates calls to {@link UserService}.
+ * This class contains no framework annotations so it can be used in plain Java or wired manually.
+ */
+@RequestScoped
+@Path("")
+@Log
+@NoArgsConstructor(force = true)
+public class UserController implements UserControllerInterface {
+
+    private final UserService userService;
+
+    private final DtoFunctionFactory factory;
+
+    @Inject
+    public UserController(UserService userService, DtoFunctionFactory factory) {
+        this.userService = userService;
+        this.factory = factory;
+    }
+
+    @Override
+    public void putUser(UUID id, PutUserRequest request) {
+        try {
+            userService.createUser(factory.requestToUserFunction().apply(id, request));
+        } catch (TransactionalException ex) {
+            if (ex.getCause() instanceof IllegalArgumentException) {
+                log.log(Level.WARNING, ex.getMessage(), ex);
+                throw new BadRequestException(ex);
+            }
+            throw ex;
+        }
+    }
+
+    @Override
+    public void patchUser(UUID id, PatchUserRequest request) {
+        userService.findById(id).ifPresentOrElse(
+                entity -> userService.updateUser(factory.updateUserWithRequestFunction().apply(entity, request)),
+                () -> {
+                    throw new NotFoundException();
+                }
+        );
+    }
+
+    @Override
+    public GetUserResponse getUserById(UUID id) {
+        return userService.findById(id)
+                .map(factory.userToResponseFunction())
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public GetUserResponse getUserByLogin(String login) {
+        return userService.findByLogin(login)
+                .map(factory.userToResponseFunction())
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public GetUsersResponse getAllUsers() {
+        return factory.usersToResponseFunction().apply(userService.getAllUsers());
+    }
+
+    @Override
+    public void deleteUser(UUID id) {
+        userService.deleteUser(id);
+    }
+
+
+    @Override
+    public byte[] getUserAvatar(UUID id) {
+        return userService.findById(id)
+                .map(u -> userService.getAvatar(id))
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public void putUserAvatar(UUID id, jakarta.servlet.http.HttpServletRequest request) {
+        userService.findById(id).ifPresentOrElse(
+                u -> {
+                    try {
+                        jakarta.servlet.http.Part part = request.getPart("avatar");
+                        if (part == null) {
+                            throw new BadRequestException();
+                        }
+                        try (java.io.InputStream is = part.getInputStream()) {
+                            userService.updateAvatar(id, is);
+                        }
+                    } catch (Exception e) {
+                        throw new BadRequestException();
+                    }
+                },
+                () -> { throw new NotFoundException(); }
+        );
+    }
+
+    @Override
+    public void deleteUserAvatar(UUID id) {
+        userService.findById(id).ifPresentOrElse(
+                u -> userService.deleteAvatar(id),
+                () -> { throw new NotFoundException(); }
+        );
+    }
+}

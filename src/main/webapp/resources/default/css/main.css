@@ -1,0 +1,174 @@
+/* Global site stylesheet - main.css
+   Loaded by the Facelets template via library="default" name="css/main.css"
+*/
+:root{
+  --bg: #f8fafc; /* very light */
+  --card: #ffffff;
+  --muted: #6c757d;
+  --accent: #2b6cb0; /* blue */
+  --accent-strong: #1e4e7a;
+  --success: #2f855a;
+  --danger: #c53030;
+  --radius: 6px;
+  --max-width: 1100px;
+}
+
+html,body{
+  height:100%;
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.container{
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Navbar */
+.navbar{
+  background: linear-gradient(90deg, #ffffffcc, #f1f5f9cc);
+  border-radius: calc(var(--radius) + 2px);
+  padding: .5rem 1rem;
+  box-shadow: 0 2px 6px rgba(15,23,42,0.04);
+}
+.navbar .nav-link{
+  color:var(--accent-strong);
+  font-weight:600;
+}
+
+/* Main content area */
+main{
+  min-height: 60vh;
+}
+
+/* Cards / articles used for details */
+.card-like{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:1rem;
+  box-shadow: 0 3px 12px rgba(15,23,42,0.06);
+  margin-bottom:1rem;
+}
+
+.article-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+}
+.article-title{
+  font-size:1.25rem;
+  margin:0;
+  color:var(--accent-strong);
+}
+.article-meta{
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+/* List / table styles */
+.table-clean{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.table-clean th,
+.table-clean td{
+  padding:.75rem 1rem;
+  text-align:left;
+  border-bottom:1px solid #eef2f6;
+}
+.table-clean th{
+  background: linear-gradient(180deg,#ffffff,#fbfdff);
+  font-weight:700;
+  color:var(--accent-strong);
+}
+.table-clean tr:last-child td{
+  border-bottom: none;
+}
+
+/* Forms */
+.form-row{
+  display:flex;
+  gap:.75rem;
+  flex-wrap:wrap;
+}
+.form-field{
+  flex:1 1 220px;
+  display:flex;
+  flex-direction:column;
+}
+label{font-weight:600; margin-bottom:.35rem; color:#2b3a4a}
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea{
+  padding:.5rem .6rem;
+  border:1px solid #d7e0ea;
+  border-radius:6px;
+  background:#fff;
+  outline:none;
+}
+input:focus, select:focus, textarea:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(43,108,176,0.08);
+}
+
+/* Buttons */
+.btn{
+  display:inline-block;
+  padding:.5rem .9rem;
+  border-radius:6px;
+  text-decoration:none;
+  border:0;
+  cursor:pointer;
+  color:#fff;
+  background:var(--accent);
+}
+.btn.secondary{ background:#6b7280 }
+.btn.ghost{ background:transparent; color:var(--accent-strong); border:1px solid rgba(43,108,176,0.12) }
+.btn.small{ padding:.35rem .6rem; font-size:.9rem }
+
+/* Form actions */
+.form-actions{ display:flex; gap:.5rem; justify-content:flex-end; margin-top:.6rem }
+
+/* Responsive tweaks */
+@media (max-width:720px){
+  .article-header{flex-direction:column; align-items:flex-start}
+  .form-row{flex-direction:column}
+}
+
+/* Footer (if used) */
+.site-footer{
+  margin-top:2rem;
+  padding:1rem 0;
+  color:var(--muted);
+  font-size:.9rem;
+  text-align:center;
+}
+
+/* Small helpers */
+.kv{ color:var(--muted); font-weight:600 }
+.value{ color:#111 }
+
+/* Improve appearance of small images */
+.img-thumb{ max-width:120px; border-radius:6px; object-fit:cover }
+
+/* Backwards compatibility: some pages used .avatar */
+.avatar{ max-width:120px; height:120px; border-radius:6px; object-fit:cover }
+
+/* Utility spacing */
+.mt-1{margin-top:.5rem} .mt-2{margin-top:1rem} .mb-1{margin-bottom:.5rem}
+
+/* Accessibility: focus outline for keyboard users */
+:focus{ outline: 3px solid rgba(43,108,176,0.12); outline-offset:2px }

@@ -2,9 +2,52 @@
     <featureManager>
         <feature>servlet-6.0</feature>
         <feature>jsonb-3.0</feature>
+        <feature>cdi-4.0</feature>
+        <feature>faces-4.0</feature>
+        <feature>restfulWS-3.1</feature>
+        <feature>persistence-3.1</feature>
+        <feature>enterpriseBeans-4.0</feature>
+        <feature>appSecurity-5.0</feature>
+        <feature>websocket-2.1</feature>
+        <feature>beanValidation-3.0</feature>
     </featureManager>
 
-    <httpEndpoint id="defaultHttpEndpoint" httpPort="9080" httpsPort="9443" host="*"/>
+    <application type="war" location="firearm-collection-JEE-1.0-SNAPSHOT.war">
+        <application-bnd>
+            <security-role name="admin">
+                <group name="admin" access-id="group:jdbc/FirearmCollection/admin"/>
+                <run-as userid="admin-service"/>
+            </security-role>
+            <security-role name="user">
+                <group name="user" access-id="group:jdbc/FirearmCollection/user"/>
+            </security-role>
+        </application-bnd>
+    </application>
 
-    <webApplication location="firearm-collection-JEE.war" contextRoot="/firearms"/>
+
+    <!-- Container authentication is handled by Jakarta Security DatabaseIdentityStoreDefinition + BasicAuthenticationMechanismDefinition -->
+
+    <dataSource id="FirearmCollectionDataSource" jndiName="jdbc/FirearmCollection">
+        <jdbcDriver javax.sql.XADataSource="org.h2.jdbcx.JdbcDataSource"
+                    javax.sql.ConnectionPoolDataSource="org.h2.jdbcx.JdbcDataSource"
+                    javax.sql.DataSource="org.h2.jdbcx.JdbcDataSource"
+                    libraryRef="H2JDBCLib"/>
+        <properties URL="jdbc:h2:mem:firearm-collection"/>
+        <!--        <properties URL="jdbc:h2:/tmp/simple-rpg-characters;AUTO_SERVER=TRUE"/>-->
+    </dataSource>
+
+    <library id="H2JDBCLib">
+        <fileset dir="${wlp.install.dir}/usr/servers/defaultServer/lib/global/" includes="h2-2.2.220.jar"/>
+    </library>
+
+    <logging consoleLogLevel="INFO"/>
+    <logging traceSpecification="eclipselink.sql=all"
+             traceFileName="stdout"
+             traceFormat="BASIC"/>
+
+    <!-- Basic registry for ORB / EJB runtime; this is separate from Jakarta Security DB identity store used for HTTP auth -->
+    <basicRegistry id="basic" realm="BasicRealm">
+        <user name="admin-service" password="adminadmin" />
+    </basicRegistry>
+    <httpEndpoint id="defaultHttpEndpoint" httpPort="9080" httpsPort="9443" host="*"/>
 </server>
